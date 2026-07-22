@@ -1,403 +1,325 @@
-PAPER: Domain-Agnostic Hardware Fingerprinting-Based Device Identifier for
-       Zero-Trust IoT Security
-AUTHORS: Abdurrahman Elmaghbub and Bechir Hamdaoui (Oregon State University)
-SOURCE: IEEE Wireless Communications, April 2024 (Zero Trust Security Methods
-         for Wireless Networks special section)
+PAPER: A Lightweight Zero Trust Framework for Secure 5G VANET Vehicular Communication
+AUTHORS: Muhammad Jamil, Muhammad Farhan, Farhan Ullah, Gautam Srivastava
+SOURCE: IEEE Wireless Communications, December 2024
 
 ====================================================================
 * ABSTRACT
 ====================================================================
-Next-generation networks aim to seamlessly interconnect humans, machines,
-devices, and systems, which raises privacy/security concerns since a
-single compromise can affect the whole network. Zero Trust (ZT) is
-positioned as the key paradigm to safeguard network integrity and data
-confidentiality. The paper introduces EPS-CNN, a deep-learning-based
-wireless device identification framework intended to serve as the
-device-authentication layer of a ZT architecture, targeting
-resource-constrained IoT devices. At its core, a CNN generates a device
-identity from a novel RF signal representation — the Double-Sided
-Envelope Power Spectrum (EPS) — which captures device-specific hardware
-characteristics while discarding device-irrelevant information.
-Experiments show testing accuracy of over 99% (same-domain: same day,
-location, channel), 93% (cross-day), and 95% (cross-location). The
-results demonstrate superior accuracy, robustness, and adaptability
-compared to raw-IQ-based deep learning methods, offering a pioneering
-solution for ZT-based IoT device identification.
+VANETs enable V2V and V2I communication for Intelligent Transportation
+Systems (ITS), but security is a major concern, especially with 5G
+connectivity. Traditional trust-based security schemes and standard
+authentication mechanisms are inadequate against modern cyber threats,
+and fast-moving vehicles also suffer message delivery delays. The paper
+proposes a lightweight zero-trust framework for securing V2V and V2I
+communication in 5G VANETs using two algorithms. The framework enforces
+continuous authentication and access control through a Centralized
+Certification Server (CCS), and applies microsegmentation (visibility,
+granular security, dynamic adaptation) to divide the network into secure
+zones/clusters, limiting lateral movement after a breach. It combines
+authorization, encryption, and anomaly detection. The framework is built
+using lightweight RESTful web services, and performance was measured
+using the Postman tool. Results show the framework prevents impersonation
+attacks and strengthens legitimacy of vehicular communication with low
+overhead.
 
 ====================================================================
 * INTRODUCTION
 ====================================================================
-- Motivation: massive IoT connectivity plus increasingly sophisticated
-  cyberattacks have exposed the limits of traditional perimeter-based
-  network security.
-- Zero Trust (ZT) model: "never trust, always verify" — trust is never
-  assumed, access is continuously verified based on device/user
-  credentials regardless of network location; identity authentication is
-  the most critical stage.
-- ZT device-identity requirements: hardware root of trust, passwordless
-  authentication (digital certificates with public/private keys),
-  renewable/operational credentials, and a device registry for
-  audit/access control — requiring cryptographic engines, security
-  processors, and secure storage.
-- Problem: these requirements are hard to meet for resource-constrained
-  microcontroller-based IoT devices (size, power, cost limits);
-  compromised "innocent" devices can cause data pollution, lateral
-  movement, and DoS attacks.
-- Proposed solution: EPS-CNN — a hardware device fingerprinting framework
-  that builds a unique, unforgeable, hardware-based device identity
-  without requiring expensive onboard security hardware. Device
-  fingerprints arise from manufacturing imperfections in RF circuitry
-  (e.g., oscillators) that create distinctive, physically-inseparable
-  signal distortions.
-- Deep Learning (DL) is highlighted as a powerful tool already used for
-  device discovery, vulnerability analysis, anomaly detection, and
-  trust-based policy recommendation in IoT/ZT contexts.
-- Key limitation of prior DL fingerprinting work: reliance on raw IQ data
-  as input, which contains a lot of device-irrelevant information
-  (channel, location, time artifacts), causing poor generalization when
-  test data comes from a different "domain" than training data
-  ("needle in a haystack" problem).
-- Core contribution: EPS, a novel RF representation that isolates the
-  oscillator's impairment (a key, domain-resilient hardware fingerprint
-  source), improving robustness against time/channel/location domain
-  shifts.
-
-Key contributions listed by the authors:
-1. EPS — a novel IQ representation improving deep-learning device
-   identifier performance and shown to be distinguishable/reliable across
-   time, channel, and location domains.
-2. EPS-CNN — an EPS-based fingerprinting framework substantially
-   enhancing accuracy/robustness of device identification under domain
-   variation.
-3. Empirical assessment on real WiFi devices, achieving average
-   cross-domain testing accuracy of 93% (cross-day) and 95%
-   (cross-location).
+- Motivation: Rapid urbanization has increased traffic congestion,
+  pollution, and transportation overflow, driving the need for
+  Intelligent Transportation Systems (ITS).
+- ITS services include traffic monitoring, violation alerts, congestion
+  analysis, road infrastructure analysis, pre-crash warnings, and message
+  passing.
+- VANETs support two communication types:
+  * V2V (Vehicle-to-Vehicle): direct sharing of speed, location,
+    direction between nearby vehicles.
+  * V2I (Vehicle-to-Infrastructure): communication with traffic signals,
+    tollbooths, smart highway systems, parking systems, etc.
+- 4G VANETs suffer from bandwidth limitations and delay in message
+  dissemination for fast-moving vehicles.
+- 5G brings small cell networks, network slicing, edge computing, and
+  beamforming — enabling ultra-high transmission rates and low
+  end-to-end latency, making VANETs more ubiquitous and mission-critical.
+- Problem: Traditional VANET security (trust-based schemes, cryptographic
+  protocols, standard authentication) is inadequate against malicious
+  actors as networks scale and become more dynamic.
+- Solution direction: Zero Trust — no implicit trust; continuous
+  verification and authorization before granting least-privileged access.
+  Combined with microsegmentation and software-defined perimeters to
+  contain breaches.
+- Contribution: A zero-trust framework using a Centralized Certification
+  Server (CCS) that authenticates vehicles via multi-factor verification,
+  segments the VANET into secure clusters, and integrates encryption and
+  anomaly detection — implemented as lightweight REST APIs (novel in this
+  domain) tested over 5G.
 
 ====================================================================
 * BACKGROUND
 ====================================================================
-- Zero Trust security paradigm (BeyondCorp [1], NIST ZTA SP 800-207 [2])
-  and "Seven Properties of Highly Secure Devices" [3] underpin the
-  device-identity requirements discussed.
-- RF/Hardware fingerprinting: a physical-layer security technique that
-  extracts unique signatures from a device's transmitted RF signal,
-  caused by inherent manufacturing imperfections in RF circuitry
-  components.
-- Carrier Frequency Offset (CFO): a hardware impairment from mismatch
-  between the local oscillators of transmitter and receiver, caused by
-  oscillator inaccuracy/instability, Doppler shifts, or synchronization
-  errors — a well-known RF hardware fingerprinting factor [12,13].
-- Prior DL-based fingerprinting (using raw IQ data) is known from
-  literature ([6],[8]-[10]) to degrade sharply when tested under domains
-  (channel, location, day) different from training — this is the central
-  gap the paper addresses.
+- VANETs are ad-hoc wireless networks formed by moving vehicles and
+  roadside infrastructure to support ITS use cases (accident alerts,
+  congestion reporting, emergency response, fuel/resource alerts).
+- Location awareness is fundamental — VANETs rely on accurate vehicle
+  location for time-critical services.
+- 5G is positioned as the enabling wireless layer, replacing 4G to solve
+  bandwidth and latency shortcomings via network slicing and edge
+  computing.
+- Zero Trust Architecture (ZTA) background: originally an enterprise
+  network security paradigm where every user/entity is treated as
+  untrusted by default; continuous verification and least-privilege
+  access replace perimeter-based trust.
+- Microsegmentation: splits a large heterogeneous network into isolated
+  virtual subnets based on vehicle profile, geography, and communication
+  pattern — reducing the attack/exposure surface and containing threats
+  post-breach.
 
 ====================================================================
 * OBJECTIVES
 ====================================================================
-1. Investigate and empirically confirm that Carrier Frequency Offset
-   (CFO), caused by local oscillator inaccuracy, is the root cause of the
-   sinusoidal envelope behavior observed in IQ signals of IoT devices.
-2. Design a novel RF signal representation (EPS) that captures this
-   oscillator-driven fingerprint while suppressing device-irrelevant
-   information, to be resilient to time, channel, and location domain
-   shifts.
-3. Build EPS-CNN, a CNN-based device identification framework using EPS
-   as input, suitable for integration into a Zero Trust IoT architecture
-   as the device-authentication layer.
-4. Empirically validate EPS-CNN's accuracy and robustness in same-domain
-   and cross-domain (cross-location, cross-day, random-location)
-   scenarios using a real 15-device WiFi testbed, and compare against a
-   baseline CNN using raw IQ input (IQ-CNN).
+1. Design a lightweight zero-trust framework tailored to 5G VANETs for
+   securing both V2V and V2I communication.
+2. Use a Centralized Certification Server (CCS) to enforce continuous
+   authentication and access control via multi-factor verification.
+3. Apply microsegmentation to divide VANETs into secure clusters and
+   restrict lateral movement/access between clusters.
+4. Integrate encryption and anomaly detection to protect against
+   impersonation, man-in-the-middle (MITM), and distributed denial of
+   service (DDoS) attacks.
+5. Implement the framework using lightweight RESTful web services (a
+   novel approach for VANET communication) and empirically evaluate
+   performance (response time, security resilience) using a third-party
+   tool (Postman).
 
 ====================================================================
 * LITERATURE REVIEW
 ====================================================================
-- [1] Ward & Beyer — BeyondCorp: foundational enterprise ZT security
-  approach.
-- [2] NIST SP 800-207 — formal Zero Trust Architecture specification.
-- [3] Hunt, Letey, Nightingale — "Seven Properties of Highly Secure
-  Devices," defining hardware root of trust and device identity
-  requirements referenced in the intro.
-- [4] Sankhe et al. — Oracle: CNN-based radio classification (RF
-  fingerprinting via DL), foundational DL fingerprinting reference.
-- [5] Jagannath et al. — comprehensive survey of RF fingerprinting
-  (traditional + DL approaches, open challenges).
-- [6] Elmaghbub & Hamdaoui — LoRa device fingerprinting in the wild;
-  showed RF fingerprint sensitivity to deployment variability (a
-  motivating prior finding for domain-shift problem).
-- [7] Hussain et al. — survey on ML in IoT security: current solutions
-  and future challenges (context for DL's broader use in IoT security).
-- [8] Hamdaoui & Elmaghbub — DL-based LoRa-IoT fingerprinting sensitivity
-  to network deployment changes.
-- [9] Al-Shawabka et al. — INFOCOM 2020 study dissecting the impact of
-  wireless channel on radio fingerprinting ("Exposing the Fingerprint").
-- [10] Hanna, Karunaratne, Cabric — WiSig: large-scale WiFi RF
-  fingerprinting dataset for receiver/channel-agnostic fingerprinting.
-- [11] Elmaghbub & Hamdaoui — "A Needle in a Haystack": prior CNS 2023
-  work on distinguishable DNN features for domain-agnostic fingerprinting
-  (closely related precursor work by same authors).
-- [12] Zhou et al. — frequency accuracy/stability of crystal oscillators
-  (technical basis for CFO's role as a hardware fingerprint).
-- [13] Vo-Huu et al. — fingerprinting WiFi devices using SDRs.
-- [14] Elmaghbub & Hamdaoui — arXiv preprint introducing EPS
-  representation for domain-adaptation learning of device fingerprints
-  (this appears to be the extended/earlier version of the current work).
-- [15] Parks & McClellan — Chebyshev approximation for nonrecursive
-  digital filters (basis for the FIR Hilbert transform filter used in EPS
-  generation).
+The related work is organized around VANET service discovery,
+communication issues, and security challenges:
 
-Overall gap: existing DL-based RF fingerprinting methods rely on raw IQ
-data, which is dominated by device-irrelevant, domain-sensitive
-information, leading to poor cross-domain generalization — a problem
-repeatedly documented in the cited works but not solved by them.
+- Service discovery architectures: centralized directory-based,
+  directory-less, and distributed directory-based approaches [3];
+  research also covered anonymous location-based/self-reliant routing
+  for MANETs and 5G VANET tutorials.
+- V2V/V2I communication studies:
+  * [4] Probability analysis of short-range V2V models (mmWave).
+  * [5] Evolutionary algorithm-based vehicular clustering — minimizes
+    clusters, good for normal traffic but weak under congestion.
+  * [6] Evaluation of VANET routing protocols in Madina city.
+  * [7] Certificate-based authentication scheme — burdens vehicle
+    storage due to certificate volume.
+  * [8] P2P message-passing issues/challenges in V2V.
+  * [9] Vehicle-Consensus Routing Management Scheme (VCRMS) — depends on
+    inter-vehicle info exchange; reliability of shared info not
+    guaranteed.
+  * [10] Cloud architecture for vehicle-to-cloud communication; overview
+    of VANET security challenges (data loss/breaches, DDoS, insider/
+    outsider attacks, privacy, scalability, lightweight authentication).
+  * [11] Comprehensive survey of VANET security issues: availability,
+    confidentiality, authenticity, integrity, nonrepudiation; threats
+    include DoS, jamming, malware, blackhole/greyhole attacks, spamming,
+    eavesdropping, MITM, Sybil, tunnelling, GPS spoofing, impersonation,
+    replay attacks, message tampering, repudiation.
+  * [12] Markov renewal process model for message propagation speed
+    between RSUs.
+  * [13] Fog-technology-based distributed VANET architecture; evaluated
+    via throughput, jitter, delay — limited to a single use case.
+  * [14] SDN-enabled 5G VANETs for adaptive clustering and beamformed
+    transmission — no analytical/simulation validation provided.
+  * [15] Hash-based authentication protocol for IoV — lacks security
+    analysis against diverse attacks.
+- Key gap identified: existing VANET security approaches (encryption,
+  certificates, PKI) face scalability issues in massive, fast-changing
+  5G VANET environments; none combine zero-trust + microsegmentation +
+  5G-native features (network slicing) the way this paper proposes.
 
 ====================================================================
 * METHODOLOGY
 ====================================================================
-Two-part methodology: (A) an empirical/simulation study establishing the
-physical root cause of device fingerprints, and (B) the design and
-evaluation of the EPS-CNN identification framework.
+The zero-trust framework enforces continuous authentication, granular
+access control, and monitoring. Key components:
 
-A. Understanding Oscillator Frequency Inaccuracy's Impact on IQ Signals
-   - Testbed: 15 Pycom/IoT devices (identical hardware) transmitting
-     identical IEEE 802.11b WiFi packets, captured via a USRP B210
-     receiver, after 12 minutes of warm-up (to ensure hardware
-     stabilization/consistent measurement).
-   - Observation: I and Q time-domain signal envelopes show a
-     "sinusoidal" pattern with a device-specific number of "humps."
-   - Hypothesis: Carrier Frequency Offset (CFO), due to oscillator
-     inaccuracy, causes this pattern; the number of humps depends on CFO
-     value, and CFO differs by device due to manufacturing variation.
-   - Validation: MATLAB simulation of a full WLAN 802.11b system with
-     controlled CFO values (0, 50, 100, 200 Hz) through an AWGN channel;
-     confirmed hump count scales with CFO. Other impairments (IQ
-     imbalance, phase noise, DC offset) tested and did NOT produce the
-     sinusoidal envelope effect — isolating CFO/oscillator as the cause.
+1. Centralized Server (CCS):
+   - Handles identity verification, access control, and monitoring for
+     all communication requests.
+   - All vehicles must authenticate before sending messages.
+   - Multi-factor authentication = One-Time Password (OTP) + digital
+     signature.
+   - Enforces least-privilege access — vehicles communicate only with
+     authorized members of their own segment.
 
-B. EPS Representation Generation Pipeline
-   1. Take received IQ frame r(t).
-   2. Apply an FIR Hilbert transform filter (Parks-McClellan algorithm)
-      to build an analytic signal; scale by an imaginary unit factor and
-      combine with a time-delayed original signal (delay compensates for
-      FIR filter's inherent group delay, half the filter length).
-   3. Compute the signal envelope e(t) as the absolute value of the
-      analytic signal.
-   4. Downsample envelope by factor of 15; apply a lowpass filter to
-      reduce ringing and smooth the envelope.
-   5. Center the envelope amplitude around zero.
-   6. Compute the normalized double-sided power spectrum of the envelope
-      -> this is the EPS representation.
-   - EPS is generated separately for I and Q components -> EPS(I) and
-     EPS(Q), later combined into a single tensor for the CNN.
+2. Microsegmentation:
+   - VANET divided into secure zones/clusters.
+   - Vehicles can only access/communicate within their own zone,
+     preventing lateral movement of threats.
+   - Zone access lists maintained centrally; segmentation adapted
+     dynamically based on contextual data.
 
-C. EPS-CNN Framework Design (for Zero-Trust IoT integration)
-   1. Enrollment/Registration: new IoT device's IQ frame r(t) (dimension
-      1x25170) is captured; EPS generator computes EPS(I) and EPS(Q),
-      combined into a 2x4096 tensor.
-   2. CNN Architecture: six convolutional blocks (each = 2D-Convolution +
-      BatchNormalization + LeakyReLU + MaxPooling) extract fingerprint
-      features from the EPS tensor; followed by three fully-connected
-      layers (with LeakyReLU activations) and a final Softmax layer that
-      outputs the predicted device identity.
-   3. Runtime operation: when a device tries to access the network, it
-      first undergoes rogue device detection (confirm legitimate
-      affiliation), then identity verification using the trained EPS-CNN
-      model. Continuous authentication is performed at the packet level
-      using incoming RF signals; any deviation from the enrolled EPS
-      fingerprint triggers an alert for investigation.
+3. Anomaly Detection:
+   - CCS continuously analyzes network traffic, vehicle credentials, and
+     message timestamps for suspicious patterns.
+   - Detected threats trigger immediate isolation or access revocation.
 
-D. Evaluation Methodology
-   - Testbed: 15 Pycom devices + USRP B210 receiver (Fig. 5).
-   - Domains tested: channel (wired vs. wireless), location (Loc A = 1m,
-     Loc B = 2m, Loc C = 3m, Loc D = random within 3m), and time
-     (3 consecutive days).
-   - 5-fold cross-validation (each device's data split into 5
-     non-overlapping equal partitions).
-   - Baseline for comparison: IQ-CNN — identical CNN architecture but fed
-     raw IQ data instead of EPS.
-   - Metrics: same-domain accuracy (train/test same domain) and
-     cross-domain accuracy (train/test different domain — location,
-     channel, or day).
+4. Encryption:
+   - End-to-end encryption for all V2V and V2I communication.
+   - CCS distributes/manages per-vehicle keys; session keys rotated
+     periodically.
 
 ====================================================================
-* DIAGRAM (SYSTEM / SIGNAL-PROCESSING DIAGRAMS — no formal ER/DFD given)
+* DIAGRAM (ER DIAGRAM / DFD — as depicted/implied in the paper)
 ====================================================================
-The paper does not include a formal ER diagram or DFD, but presents
-several system/data diagrams that serve an equivalent conceptual role:
+The paper does not include a formal ER diagram, but presents system-level
+diagrams that function as DFDs/architecture diagrams:
 
-- FIGURE 1 — Time-domain IQ signal behavior across 4 devices (A-D):
-  shows I-component (a) and Q-component (b) envelopes, illustrating
-  device-specific "hump" patterns.
+- FIGURE 1 — Vehicular Communication (V2V & V2I) using 5G VANETs:
+  Shows an intersection ("AdHoc Domain") with vehicles exchanging V2V
+  messages directly and V2I messages with a central "Server" via the
+  ITS platform (traffic monitoring, violation warnings, congestion
+  analysis, road analysis, forward collision warnings, pre-crash
+  warnings, message passing).
 
-- FIGURE 2 — Simulated time-domain I signal component under different
-  CFO values (0, 50, 100, 200 Hz): demonstrates CFO -> envelope hump
-  relationship.
+- FIGURE 2 — V2V and V2I channel for 5G VANETs (smart-city view):
+  Depicts vehicles connecting to nearby antennas mounted on buildings,
+  which relay to a central 5G Base Station, illustrating city-scale
+  coverage and multi-antenna handoff.
 
-- FIGURE 3 — EPS representation of 10 devices: visualizes distinct
-  main-sideband shapes/locations per device (distinguishability
-  evidence).
+- FIGURE 3 — RESTful API Deployment Visual Paradigm (this is effectively
+  the system's Data Flow Diagram):
+  Client (vehicle) --HTTP Request (GET/POST/PUT/DELETE, JSON key-value)--> 
+  RESTful API (PHP 8 scripts) --> Server (Cloud) --Request/Data--> 
+  MySQL Database --> Response flows back to Client.
 
-- FIGURE 4 — EPS representation resiliency: (a) channel-time domain
-  (wired vs. wireless across 3 days) and (b) location domain (Loc A-D)
-  showing EPS overlap/stability across domains for the same device.
+- FIGURE 4 — Chord/flow diagrams showing V2V and V2I "Web Service
+  Response Time" relationships between message-passing entities (visual,
+  not a technical ER/DFD in the strict sense).
 
-- FIGURE 5 — IoT Testbed: (a) photo of the 15 Pycom transmitting devices
-  and USRP B210 receiver; (b) physical location setup diagram (Location
-  A/B/C spatial layout relative to receiver).
+Conceptual data flow (derived from Algorithms 1 & 2):
+  Vehicle (Sender) -> onAuth() [CCS authentication: signature +
+  verification + crypto] -> AuthenticationCode -> Message assembly
+  (MessageID, Template+Priority+Timestamp, Location) -> 
+  [V2V only: ClusterID + ReceiverID via getClusterInfo()] -> 
+  sendMessageV2I()/sendMessageV2V() -> JSON Response (Status: Sent /
+  Retry if location missing) -> back to Client/Receiver.
 
-- FIGURE 6 — Bar charts of EPS-CNN vs. IQ-CNN testing accuracy across
-  location scenarios (a-d) and day scenarios (e).
-
-Conceptual Data-Flow (derived from the EPS-CNN framework description,
-functioning as a DFD):
-  Received RF Frame r(t) [1x25170, complex IQ]
-    -> Split into I and Q components
-    -> [per component] FIR Hilbert Transform Filter (Parks-McClellan)
-    -> Analytic Signal (with delay compensation)
-    -> Envelope Extraction e(t) = |analytic signal|
-    -> Downsample (factor 15) + Lowpass Filter (smoothing)
-    -> Center amplitude around zero
-    -> Power Spectrum Estimation -> EPS(I) / EPS(Q)
-    -> Combine into Tensor [2 x 4096]
-    -> CNN (6x [Conv2D+BatchNorm+LeakyReLU+MaxPool] -> 3 FC layers w/
-       LeakyReLU -> Softmax)
-    -> Predicted Device Identity (used for enrollment or continuous
-       authentication)
-
-No relational/database ER diagram is presented, as this is a signal-
-processing/ML system rather than a data-management system.
+Note: No formal entity-relationship (ER) diagram of the MySQL schema is
+provided in the paper; only the general REST/DB architecture (Fig. 3).
 
 ====================================================================
 * METHODS
 ====================================================================
-- Signal processing method: EPS generation via Hilbert-transform-based
-  analytic signal construction, envelope extraction, downsampling,
-  lowpass filtering, zero-centering, and power spectrum estimation
-  (detailed above under Methodology B).
-- Machine learning method: Convolutional Neural Network (CNN) with 6
-  convolutional blocks (Conv2D + BatchNorm + LeakyReLU + MaxPooling),
-  3 fully-connected layers with LeakyReLU, and a Softmax output layer for
-  multi-class device classification.
-- Baseline comparison method: IQ-CNN — same CNN architecture, fed raw IQ
-  data instead of EPS, used to isolate the benefit of the EPS
-  representation itself.
-- Experimental design: controlled variation of domain factors (channel:
-  wired/wireless; location: 1m/2m/3m/random; time: 3 consecutive days)
-  with 5-fold cross-validation for robust accuracy estimates.
-- Statistical/physical validation method: MATLAB-based simulation of a
-  full WLAN 802.11b transceiver chain to isolate CFO as the causal factor
-  behind the sinusoidal envelope (control variable: CFO in Hz; controlled
-  channel: AWGN).
+- Algorithm 1 (V2I Communication):
+  Inputs: SenderID, MessageID, Message, Location.
+  Steps: authenticate sender via onAuth() -> get next MessageID via
+  getMaxID()+1 -> build Message (template + priority + timestamp) ->
+  build Location (lat + long) -> if Location is null, prompt to turn on
+  OBU location and retry; else mark "Message Sent Successfully" -> return
+  JSON status.
+
+- Algorithm 2 (V2V Communication):
+  Inputs: SenderID, ReceiverID, ClusterID, MessageID, Message, Location.
+  Similar to Algorithm 1, but additionally fetches ReceiverID via
+  getClusterInfo() (returns all vehicle IDs in a cluster, receiver chosen
+  from it), and includes ClusterID. Rest of the process (message
+  composition, location check, response) mirrors V2I.
+
+- Implementation stack: Lightweight web services written in native PHP
+  (PHP 8), RESTful APIs, JSON key-value data exchange, MySQL database,
+  Cloud-hosted server.
+
+- Evaluation tool: Postman (third-party API testing tool) — used to
+  measure response time, response size, socket initialization, DNS
+  lookup, TCP handshake, transfer start, and download time, over 5
+  different HTTP requests, tested under both cold and cached conditions.
 
 ====================================================================
 * SYSTEM REQUIREMENTS
 ====================================================================
-(Inferred from the described experimental/implementation setup, as the
-paper does not present a dedicated requirements section)
+(Inferred from the described implementation, as the paper does not list
+these explicitly as a separate section)
 
-Hardware:
-- 15 Pycom IoT devices (identical hardware, running IEEE 802.11b WiFi)
-  as transmitters/devices under test.
-- USRP B210 software-defined radio as the receiver/data-capture device.
-- Indoor experimental environment supporting fixed distances (1m, 2m,
-  3m) and random placement (within 3m) for location experiments; wired
-  and wireless channel setups for channel-agnostic testing.
+Hardware/Network:
+- On-Board Units (OBUs) in vehicles with location (GPS) capability.
+- 5G-enabled antennas and base stations for cellular connectivity.
+- Cloud server infrastructure to host the CCS and database.
 
-Software/Computational:
-- MATLAB for CFO-impact simulation of a WLAN 802.11b system (including
-  AWGN channel modeling).
-- Signal processing pipeline: FIR Hilbert transform filter (Parks-
-  McClellan design), downsampling, lowpass filtering, power spectrum
-  estimation (custom EPS generator).
-- Deep learning framework capable of building/training CNNs (6
-  convolutional blocks + FC layers + Softmax), with 2D-Convolution,
-  BatchNormalization, LeakyReLU, and MaxPooling layer support.
-- 5-fold cross-validation infrastructure for evaluation.
+Software:
+- PHP 8 for backend web service scripts.
+- MySQL database for storing message templates, V2I/V2V message tables,
+  vehicle/cluster metadata.
+- RESTful API architecture (HTTPS) supporting GET/POST/PUT/DELETE.
+- JSON as the data interchange format (key-value pairs).
+- Postman for functional/performance testing of the APIs.
 
-Zero-Trust Integration Requirements:
-- Secure enrollment/registration process for new IoT devices (hardware
-  fingerprinting on entry).
-- Rogue device detection mechanism prior to identity verification.
-- Continuous, packet-level authentication capability using live RF
-  signal fingerprint comparison.
-- Alerting mechanism for fingerprint deviation (anomaly/threat
-  detection).
+Security Requirements:
+- Multi-factor authentication support (OTP + digital signature).
+- Private key cryptography and hash functions for the onAuth() process.
+- End-to-end encryption with centrally managed, periodically rotated
+  session keys.
+- Continuous monitoring/anomaly detection pipeline (traffic, credentials,
+  timestamps).
 
 ====================================================================
 * RESULTS
 ====================================================================
-Root-cause validation:
-- CFO simulation confirmed that the number of envelope "humps" scales
-  with CFO value (0/50/100/200 Hz), validating CFO/oscillator inaccuracy
-  as the fingerprint source; other impairments (IQ imbalance, phase
-  noise, DC offset) did not reproduce this effect.
+Security/Attack Resilience:
+- Impersonation Attack: 0 successful impersonations out of 1000 attempts
+  — a 100% improvement over standard cryptography-based authentication
+  (compared to [11]).
+- Distributed Denial of Service (DDoS): Compromised nodes isolated within
+  2 minutes of detecting abnormal traffic, limiting impact to the
+  affected cluster — 76% faster response vs. latency-to-traffic-density
+  benchmark in [6].
+- Man-in-the-Middle (MITM): End-to-end encryption prevented attackers
+  from deciphering intercepted ciphertext; framework reduced adjusted
+  breach likelihood score by 80% compared to [9]; automated policy
+  enforcement lowered privilege revocation time by 90% after threat
+  detection.
 
-Same-domain accuracy:
-- EPS-CNN and IQ-CNN both achieve very high accuracy when trained/tested
-  on the same location, channel, or day (e.g., same-location average
-  accuracy for EPS-CNN: 100% at Loc A, 99.6% at Loc B, 96.7% at Loc C;
-  same-day accuracy 100% (EPS-CNN) vs 99% (IQ-CNN)).
-
-Cross-location accuracy (fixed different locations):
-- Training on Loc A / testing on Loc C: EPS-CNN accuracy >95%; IQ-CNN
-  accuracy below 30%.
-- Similar large gains for other train/test location combinations
-  (Loc B, Loc C) — described as the highest reported cross-domain
-  performance for DL-based device fingerprinting at the time.
-
-Cross-location accuracy (random placement):
-- Trained on Loc A (fixed 1m), tested on random locations within 3m:
-  EPS-CNN average accuracy 93% and 98% for two random deployments;
-  IQ-CNN dropped to only 40% and 58% respectively.
-
-Cross-day (temporal) accuracy:
-- EPS-CNN average testing accuracy: 93% (Day 2) and 92% (Day 3) when
-  trained on Day 1, versus 88% and 89% respectively for IQ-CNN.
-- Similar improvements when trained on Days 2/3 and tested on other days.
-
-Channel robustness:
-- EPS representation remained visually/quantitatively stable across
-  wired vs. wireless channel conditions over 3 consecutive days, for all
-  15 tested devices.
-
-Additional security/privacy benefits noted:
-- EPS-CNN reduces transmission of device credential information
-  (privacy-preserving) and removes the need for manual, error-prone MAC
-  Authentication Bypass/allow-list maintenance, since policy
-  recommendations derive automatically from the model's output.
-- Framework durability depends on hardware aging rate (esp. crystal
-  oscillator quality); current evaluation covers only short-term aging
-  (~1 month), a standard practice for new fingerprinting techniques.
+Performance (via Postman, HTTPS requests, 5 trials each for V2I and V2V):
+- All 5 requests returned status code 200 (100% accurate web service
+  hits); response size constant since the same message template was used.
+- V2I timings (ms) ranged approx: Socket Init 1.40–2.18, DNS Lookup
+  1.62–4.11, TCP Handshake 0.76–1.47, Transfer Start 80.91–98.18,
+  Download 3.35–20.24.
+- V2V timings (ms) ranged approx: Socket Init 1.04–11.24, DNS Lookup
+  0.47–1.19, TCP Handshake 1.48–3.03, Transfer Start 58.95–93.56,
+  Download 2.89–12.61.
+- Variation across the 5 requests attributed to testing on moving
+  vehicles (real-world network conditions).
+- Response times improved substantially after Postman cache was enabled,
+  showing efficient stateless client-side data handling.
+- Overall: robust packet delivery ratio attributed to 5G's high
+  bandwidth; lightweight nature and resource optimization cited as key
+  performance drivers.
 
 ====================================================================
 * FUTURE DIRECTIONS
 ====================================================================
-- Investigate model behavior under prolonged/long-term hardware aging
-  (spanning months to years), matching typical IoT device lifespans,
-  since current validation only covers short-term (~1 month) aging.
-- Explore durability/drift of the EPS fingerprint as hardware components
-  (especially the crystal oscillator) age over the device's operational
-  lifetime.
-- (Implied, from framing) Broader real-world ZT deployment integration,
-  extending beyond WiFi/802.11b to other protocols/domains, and further
-  hardening the rogue-device detection and continuous authentication
-  pipeline.
+- Scale the research by building real-world applications for actual
+  vehicle On-Board Units (OBUs), beyond simulated/lab testing.
+- Incorporate Machine Learning (ML) models into anomaly detection to
+  identify potential threats more proactively.
+- Develop an intrusion detection system for vehicle identification that
+  considers vehicular mobility patterns and communication behavior.
+- Address noted limitations: scalability challenges, infrastructure
+  resilience, applicability to complex/heterogeneous vehicular networks,
+  and constraints of the simulation environment.
+- Conduct user studies to validate real-world usability and further
+  explore solutions to the above limitations.
 
 ====================================================================
 * CONCLUSION
 ====================================================================
-The paper addresses the security challenge posed by resource-constrained,
-microcontroller-based IoT devices that lack the capability for robust,
-identity-based access authentication required by Zero Trust
-architectures. EPS-CNN is presented as an innovative wireless device
-identification solution tailored specifically for ZT IoT integration. Its
-core innovation, the EPS representation, isolates the oscillator-driven
-hardware fingerprint while discarding domain-irrelevant information,
-overcoming a major limitation (poor cross-domain generalization) of
-prior raw-IQ-based deep learning fingerprinting methods. Rigorous
-empirical validation — spanning same-domain and cross-domain (location,
-random-location, and time) scenarios on a real 15-device WiFi testbed —
-demonstrates the practical viability of the approach, positioning it as
-a meaningful contribution toward secure, ZT-compliant IoT networks in an
-era of escalating cyber threats.
+Traffic management in urban areas using 5G VANETs is the central theme
+of the paper. It presents V2V and V2I communication secured via a
+lightweight zero-trust framework built on a Centralized Certification
+Server, microsegmentation, encryption, and anomaly detection. The
+framework was implemented with lightweight RESTful web services and
+evaluated for performance using Postman, showing strong throughput
+(socket initialization, DNS lookup, TCP handshake) and packet delivery
+rate, alongside strong resilience against impersonation, DDoS, and MITM
+attacks. However, the proposed cloud-based design's effectiveness has
+not been empirically verified against real-world deployment at scale;
+the authors acknowledge limitations around scalability, infrastructure
+resilience, and simulation constraints, and call for further real-world
+validation and ML-based enhancements in future work.
