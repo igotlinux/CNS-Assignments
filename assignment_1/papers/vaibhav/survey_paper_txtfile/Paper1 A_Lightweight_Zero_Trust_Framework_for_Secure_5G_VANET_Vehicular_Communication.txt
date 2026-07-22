@@ -1,0 +1,403 @@
+PAPER: Domain-Agnostic Hardware Fingerprinting-Based Device Identifier for
+       Zero-Trust IoT Security
+AUTHORS: Abdurrahman Elmaghbub and Bechir Hamdaoui (Oregon State University)
+SOURCE: IEEE Wireless Communications, April 2024 (Zero Trust Security Methods
+         for Wireless Networks special section)
+
+====================================================================
+* ABSTRACT
+====================================================================
+Next-generation networks aim to seamlessly interconnect humans, machines,
+devices, and systems, which raises privacy/security concerns since a
+single compromise can affect the whole network. Zero Trust (ZT) is
+positioned as the key paradigm to safeguard network integrity and data
+confidentiality. The paper introduces EPS-CNN, a deep-learning-based
+wireless device identification framework intended to serve as the
+device-authentication layer of a ZT architecture, targeting
+resource-constrained IoT devices. At its core, a CNN generates a device
+identity from a novel RF signal representation — the Double-Sided
+Envelope Power Spectrum (EPS) — which captures device-specific hardware
+characteristics while discarding device-irrelevant information.
+Experiments show testing accuracy of over 99% (same-domain: same day,
+location, channel), 93% (cross-day), and 95% (cross-location). The
+results demonstrate superior accuracy, robustness, and adaptability
+compared to raw-IQ-based deep learning methods, offering a pioneering
+solution for ZT-based IoT device identification.
+
+====================================================================
+* INTRODUCTION
+====================================================================
+- Motivation: massive IoT connectivity plus increasingly sophisticated
+  cyberattacks have exposed the limits of traditional perimeter-based
+  network security.
+- Zero Trust (ZT) model: "never trust, always verify" — trust is never
+  assumed, access is continuously verified based on device/user
+  credentials regardless of network location; identity authentication is
+  the most critical stage.
+- ZT device-identity requirements: hardware root of trust, passwordless
+  authentication (digital certificates with public/private keys),
+  renewable/operational credentials, and a device registry for
+  audit/access control — requiring cryptographic engines, security
+  processors, and secure storage.
+- Problem: these requirements are hard to meet for resource-constrained
+  microcontroller-based IoT devices (size, power, cost limits);
+  compromised "innocent" devices can cause data pollution, lateral
+  movement, and DoS attacks.
+- Proposed solution: EPS-CNN — a hardware device fingerprinting framework
+  that builds a unique, unforgeable, hardware-based device identity
+  without requiring expensive onboard security hardware. Device
+  fingerprints arise from manufacturing imperfections in RF circuitry
+  (e.g., oscillators) that create distinctive, physically-inseparable
+  signal distortions.
+- Deep Learning (DL) is highlighted as a powerful tool already used for
+  device discovery, vulnerability analysis, anomaly detection, and
+  trust-based policy recommendation in IoT/ZT contexts.
+- Key limitation of prior DL fingerprinting work: reliance on raw IQ data
+  as input, which contains a lot of device-irrelevant information
+  (channel, location, time artifacts), causing poor generalization when
+  test data comes from a different "domain" than training data
+  ("needle in a haystack" problem).
+- Core contribution: EPS, a novel RF representation that isolates the
+  oscillator's impairment (a key, domain-resilient hardware fingerprint
+  source), improving robustness against time/channel/location domain
+  shifts.
+
+Key contributions listed by the authors:
+1. EPS — a novel IQ representation improving deep-learning device
+   identifier performance and shown to be distinguishable/reliable across
+   time, channel, and location domains.
+2. EPS-CNN — an EPS-based fingerprinting framework substantially
+   enhancing accuracy/robustness of device identification under domain
+   variation.
+3. Empirical assessment on real WiFi devices, achieving average
+   cross-domain testing accuracy of 93% (cross-day) and 95%
+   (cross-location).
+
+====================================================================
+* BACKGROUND
+====================================================================
+- Zero Trust security paradigm (BeyondCorp [1], NIST ZTA SP 800-207 [2])
+  and "Seven Properties of Highly Secure Devices" [3] underpin the
+  device-identity requirements discussed.
+- RF/Hardware fingerprinting: a physical-layer security technique that
+  extracts unique signatures from a device's transmitted RF signal,
+  caused by inherent manufacturing imperfections in RF circuitry
+  components.
+- Carrier Frequency Offset (CFO): a hardware impairment from mismatch
+  between the local oscillators of transmitter and receiver, caused by
+  oscillator inaccuracy/instability, Doppler shifts, or synchronization
+  errors — a well-known RF hardware fingerprinting factor [12,13].
+- Prior DL-based fingerprinting (using raw IQ data) is known from
+  literature ([6],[8]-[10]) to degrade sharply when tested under domains
+  (channel, location, day) different from training — this is the central
+  gap the paper addresses.
+
+====================================================================
+* OBJECTIVES
+====================================================================
+1. Investigate and empirically confirm that Carrier Frequency Offset
+   (CFO), caused by local oscillator inaccuracy, is the root cause of the
+   sinusoidal envelope behavior observed in IQ signals of IoT devices.
+2. Design a novel RF signal representation (EPS) that captures this
+   oscillator-driven fingerprint while suppressing device-irrelevant
+   information, to be resilient to time, channel, and location domain
+   shifts.
+3. Build EPS-CNN, a CNN-based device identification framework using EPS
+   as input, suitable for integration into a Zero Trust IoT architecture
+   as the device-authentication layer.
+4. Empirically validate EPS-CNN's accuracy and robustness in same-domain
+   and cross-domain (cross-location, cross-day, random-location)
+   scenarios using a real 15-device WiFi testbed, and compare against a
+   baseline CNN using raw IQ input (IQ-CNN).
+
+====================================================================
+* LITERATURE REVIEW
+====================================================================
+- [1] Ward & Beyer — BeyondCorp: foundational enterprise ZT security
+  approach.
+- [2] NIST SP 800-207 — formal Zero Trust Architecture specification.
+- [3] Hunt, Letey, Nightingale — "Seven Properties of Highly Secure
+  Devices," defining hardware root of trust and device identity
+  requirements referenced in the intro.
+- [4] Sankhe et al. — Oracle: CNN-based radio classification (RF
+  fingerprinting via DL), foundational DL fingerprinting reference.
+- [5] Jagannath et al. — comprehensive survey of RF fingerprinting
+  (traditional + DL approaches, open challenges).
+- [6] Elmaghbub & Hamdaoui — LoRa device fingerprinting in the wild;
+  showed RF fingerprint sensitivity to deployment variability (a
+  motivating prior finding for domain-shift problem).
+- [7] Hussain et al. — survey on ML in IoT security: current solutions
+  and future challenges (context for DL's broader use in IoT security).
+- [8] Hamdaoui & Elmaghbub — DL-based LoRa-IoT fingerprinting sensitivity
+  to network deployment changes.
+- [9] Al-Shawabka et al. — INFOCOM 2020 study dissecting the impact of
+  wireless channel on radio fingerprinting ("Exposing the Fingerprint").
+- [10] Hanna, Karunaratne, Cabric — WiSig: large-scale WiFi RF
+  fingerprinting dataset for receiver/channel-agnostic fingerprinting.
+- [11] Elmaghbub & Hamdaoui — "A Needle in a Haystack": prior CNS 2023
+  work on distinguishable DNN features for domain-agnostic fingerprinting
+  (closely related precursor work by same authors).
+- [12] Zhou et al. — frequency accuracy/stability of crystal oscillators
+  (technical basis for CFO's role as a hardware fingerprint).
+- [13] Vo-Huu et al. — fingerprinting WiFi devices using SDRs.
+- [14] Elmaghbub & Hamdaoui — arXiv preprint introducing EPS
+  representation for domain-adaptation learning of device fingerprints
+  (this appears to be the extended/earlier version of the current work).
+- [15] Parks & McClellan — Chebyshev approximation for nonrecursive
+  digital filters (basis for the FIR Hilbert transform filter used in EPS
+  generation).
+
+Overall gap: existing DL-based RF fingerprinting methods rely on raw IQ
+data, which is dominated by device-irrelevant, domain-sensitive
+information, leading to poor cross-domain generalization — a problem
+repeatedly documented in the cited works but not solved by them.
+
+====================================================================
+* METHODOLOGY
+====================================================================
+Two-part methodology: (A) an empirical/simulation study establishing the
+physical root cause of device fingerprints, and (B) the design and
+evaluation of the EPS-CNN identification framework.
+
+A. Understanding Oscillator Frequency Inaccuracy's Impact on IQ Signals
+   - Testbed: 15 Pycom/IoT devices (identical hardware) transmitting
+     identical IEEE 802.11b WiFi packets, captured via a USRP B210
+     receiver, after 12 minutes of warm-up (to ensure hardware
+     stabilization/consistent measurement).
+   - Observation: I and Q time-domain signal envelopes show a
+     "sinusoidal" pattern with a device-specific number of "humps."
+   - Hypothesis: Carrier Frequency Offset (CFO), due to oscillator
+     inaccuracy, causes this pattern; the number of humps depends on CFO
+     value, and CFO differs by device due to manufacturing variation.
+   - Validation: MATLAB simulation of a full WLAN 802.11b system with
+     controlled CFO values (0, 50, 100, 200 Hz) through an AWGN channel;
+     confirmed hump count scales with CFO. Other impairments (IQ
+     imbalance, phase noise, DC offset) tested and did NOT produce the
+     sinusoidal envelope effect — isolating CFO/oscillator as the cause.
+
+B. EPS Representation Generation Pipeline
+   1. Take received IQ frame r(t).
+   2. Apply an FIR Hilbert transform filter (Parks-McClellan algorithm)
+      to build an analytic signal; scale by an imaginary unit factor and
+      combine with a time-delayed original signal (delay compensates for
+      FIR filter's inherent group delay, half the filter length).
+   3. Compute the signal envelope e(t) as the absolute value of the
+      analytic signal.
+   4. Downsample envelope by factor of 15; apply a lowpass filter to
+      reduce ringing and smooth the envelope.
+   5. Center the envelope amplitude around zero.
+   6. Compute the normalized double-sided power spectrum of the envelope
+      -> this is the EPS representation.
+   - EPS is generated separately for I and Q components -> EPS(I) and
+     EPS(Q), later combined into a single tensor for the CNN.
+
+C. EPS-CNN Framework Design (for Zero-Trust IoT integration)
+   1. Enrollment/Registration: new IoT device's IQ frame r(t) (dimension
+      1x25170) is captured; EPS generator computes EPS(I) and EPS(Q),
+      combined into a 2x4096 tensor.
+   2. CNN Architecture: six convolutional blocks (each = 2D-Convolution +
+      BatchNormalization + LeakyReLU + MaxPooling) extract fingerprint
+      features from the EPS tensor; followed by three fully-connected
+      layers (with LeakyReLU activations) and a final Softmax layer that
+      outputs the predicted device identity.
+   3. Runtime operation: when a device tries to access the network, it
+      first undergoes rogue device detection (confirm legitimate
+      affiliation), then identity verification using the trained EPS-CNN
+      model. Continuous authentication is performed at the packet level
+      using incoming RF signals; any deviation from the enrolled EPS
+      fingerprint triggers an alert for investigation.
+
+D. Evaluation Methodology
+   - Testbed: 15 Pycom devices + USRP B210 receiver (Fig. 5).
+   - Domains tested: channel (wired vs. wireless), location (Loc A = 1m,
+     Loc B = 2m, Loc C = 3m, Loc D = random within 3m), and time
+     (3 consecutive days).
+   - 5-fold cross-validation (each device's data split into 5
+     non-overlapping equal partitions).
+   - Baseline for comparison: IQ-CNN — identical CNN architecture but fed
+     raw IQ data instead of EPS.
+   - Metrics: same-domain accuracy (train/test same domain) and
+     cross-domain accuracy (train/test different domain — location,
+     channel, or day).
+
+====================================================================
+* DIAGRAM (SYSTEM / SIGNAL-PROCESSING DIAGRAMS — no formal ER/DFD given)
+====================================================================
+The paper does not include a formal ER diagram or DFD, but presents
+several system/data diagrams that serve an equivalent conceptual role:
+
+- FIGURE 1 — Time-domain IQ signal behavior across 4 devices (A-D):
+  shows I-component (a) and Q-component (b) envelopes, illustrating
+  device-specific "hump" patterns.
+
+- FIGURE 2 — Simulated time-domain I signal component under different
+  CFO values (0, 50, 100, 200 Hz): demonstrates CFO -> envelope hump
+  relationship.
+
+- FIGURE 3 — EPS representation of 10 devices: visualizes distinct
+  main-sideband shapes/locations per device (distinguishability
+  evidence).
+
+- FIGURE 4 — EPS representation resiliency: (a) channel-time domain
+  (wired vs. wireless across 3 days) and (b) location domain (Loc A-D)
+  showing EPS overlap/stability across domains for the same device.
+
+- FIGURE 5 — IoT Testbed: (a) photo of the 15 Pycom transmitting devices
+  and USRP B210 receiver; (b) physical location setup diagram (Location
+  A/B/C spatial layout relative to receiver).
+
+- FIGURE 6 — Bar charts of EPS-CNN vs. IQ-CNN testing accuracy across
+  location scenarios (a-d) and day scenarios (e).
+
+Conceptual Data-Flow (derived from the EPS-CNN framework description,
+functioning as a DFD):
+  Received RF Frame r(t) [1x25170, complex IQ]
+    -> Split into I and Q components
+    -> [per component] FIR Hilbert Transform Filter (Parks-McClellan)
+    -> Analytic Signal (with delay compensation)
+    -> Envelope Extraction e(t) = |analytic signal|
+    -> Downsample (factor 15) + Lowpass Filter (smoothing)
+    -> Center amplitude around zero
+    -> Power Spectrum Estimation -> EPS(I) / EPS(Q)
+    -> Combine into Tensor [2 x 4096]
+    -> CNN (6x [Conv2D+BatchNorm+LeakyReLU+MaxPool] -> 3 FC layers w/
+       LeakyReLU -> Softmax)
+    -> Predicted Device Identity (used for enrollment or continuous
+       authentication)
+
+No relational/database ER diagram is presented, as this is a signal-
+processing/ML system rather than a data-management system.
+
+====================================================================
+* METHODS
+====================================================================
+- Signal processing method: EPS generation via Hilbert-transform-based
+  analytic signal construction, envelope extraction, downsampling,
+  lowpass filtering, zero-centering, and power spectrum estimation
+  (detailed above under Methodology B).
+- Machine learning method: Convolutional Neural Network (CNN) with 6
+  convolutional blocks (Conv2D + BatchNorm + LeakyReLU + MaxPooling),
+  3 fully-connected layers with LeakyReLU, and a Softmax output layer for
+  multi-class device classification.
+- Baseline comparison method: IQ-CNN — same CNN architecture, fed raw IQ
+  data instead of EPS, used to isolate the benefit of the EPS
+  representation itself.
+- Experimental design: controlled variation of domain factors (channel:
+  wired/wireless; location: 1m/2m/3m/random; time: 3 consecutive days)
+  with 5-fold cross-validation for robust accuracy estimates.
+- Statistical/physical validation method: MATLAB-based simulation of a
+  full WLAN 802.11b transceiver chain to isolate CFO as the causal factor
+  behind the sinusoidal envelope (control variable: CFO in Hz; controlled
+  channel: AWGN).
+
+====================================================================
+* SYSTEM REQUIREMENTS
+====================================================================
+(Inferred from the described experimental/implementation setup, as the
+paper does not present a dedicated requirements section)
+
+Hardware:
+- 15 Pycom IoT devices (identical hardware, running IEEE 802.11b WiFi)
+  as transmitters/devices under test.
+- USRP B210 software-defined radio as the receiver/data-capture device.
+- Indoor experimental environment supporting fixed distances (1m, 2m,
+  3m) and random placement (within 3m) for location experiments; wired
+  and wireless channel setups for channel-agnostic testing.
+
+Software/Computational:
+- MATLAB for CFO-impact simulation of a WLAN 802.11b system (including
+  AWGN channel modeling).
+- Signal processing pipeline: FIR Hilbert transform filter (Parks-
+  McClellan design), downsampling, lowpass filtering, power spectrum
+  estimation (custom EPS generator).
+- Deep learning framework capable of building/training CNNs (6
+  convolutional blocks + FC layers + Softmax), with 2D-Convolution,
+  BatchNormalization, LeakyReLU, and MaxPooling layer support.
+- 5-fold cross-validation infrastructure for evaluation.
+
+Zero-Trust Integration Requirements:
+- Secure enrollment/registration process for new IoT devices (hardware
+  fingerprinting on entry).
+- Rogue device detection mechanism prior to identity verification.
+- Continuous, packet-level authentication capability using live RF
+  signal fingerprint comparison.
+- Alerting mechanism for fingerprint deviation (anomaly/threat
+  detection).
+
+====================================================================
+* RESULTS
+====================================================================
+Root-cause validation:
+- CFO simulation confirmed that the number of envelope "humps" scales
+  with CFO value (0/50/100/200 Hz), validating CFO/oscillator inaccuracy
+  as the fingerprint source; other impairments (IQ imbalance, phase
+  noise, DC offset) did not reproduce this effect.
+
+Same-domain accuracy:
+- EPS-CNN and IQ-CNN both achieve very high accuracy when trained/tested
+  on the same location, channel, or day (e.g., same-location average
+  accuracy for EPS-CNN: 100% at Loc A, 99.6% at Loc B, 96.7% at Loc C;
+  same-day accuracy 100% (EPS-CNN) vs 99% (IQ-CNN)).
+
+Cross-location accuracy (fixed different locations):
+- Training on Loc A / testing on Loc C: EPS-CNN accuracy >95%; IQ-CNN
+  accuracy below 30%.
+- Similar large gains for other train/test location combinations
+  (Loc B, Loc C) — described as the highest reported cross-domain
+  performance for DL-based device fingerprinting at the time.
+
+Cross-location accuracy (random placement):
+- Trained on Loc A (fixed 1m), tested on random locations within 3m:
+  EPS-CNN average accuracy 93% and 98% for two random deployments;
+  IQ-CNN dropped to only 40% and 58% respectively.
+
+Cross-day (temporal) accuracy:
+- EPS-CNN average testing accuracy: 93% (Day 2) and 92% (Day 3) when
+  trained on Day 1, versus 88% and 89% respectively for IQ-CNN.
+- Similar improvements when trained on Days 2/3 and tested on other days.
+
+Channel robustness:
+- EPS representation remained visually/quantitatively stable across
+  wired vs. wireless channel conditions over 3 consecutive days, for all
+  15 tested devices.
+
+Additional security/privacy benefits noted:
+- EPS-CNN reduces transmission of device credential information
+  (privacy-preserving) and removes the need for manual, error-prone MAC
+  Authentication Bypass/allow-list maintenance, since policy
+  recommendations derive automatically from the model's output.
+- Framework durability depends on hardware aging rate (esp. crystal
+  oscillator quality); current evaluation covers only short-term aging
+  (~1 month), a standard practice for new fingerprinting techniques.
+
+====================================================================
+* FUTURE DIRECTIONS
+====================================================================
+- Investigate model behavior under prolonged/long-term hardware aging
+  (spanning months to years), matching typical IoT device lifespans,
+  since current validation only covers short-term (~1 month) aging.
+- Explore durability/drift of the EPS fingerprint as hardware components
+  (especially the crystal oscillator) age over the device's operational
+  lifetime.
+- (Implied, from framing) Broader real-world ZT deployment integration,
+  extending beyond WiFi/802.11b to other protocols/domains, and further
+  hardening the rogue-device detection and continuous authentication
+  pipeline.
+
+====================================================================
+* CONCLUSION
+====================================================================
+The paper addresses the security challenge posed by resource-constrained,
+microcontroller-based IoT devices that lack the capability for robust,
+identity-based access authentication required by Zero Trust
+architectures. EPS-CNN is presented as an innovative wireless device
+identification solution tailored specifically for ZT IoT integration. Its
+core innovation, the EPS representation, isolates the oscillator-driven
+hardware fingerprint while discarding domain-irrelevant information,
+overcoming a major limitation (poor cross-domain generalization) of
+prior raw-IQ-based deep learning fingerprinting methods. Rigorous
+empirical validation — spanning same-domain and cross-domain (location,
+random-location, and time) scenarios on a real 15-device WiFi testbed —
+demonstrates the practical viability of the approach, positioning it as
+a meaningful contribution toward secure, ZT-compliant IoT networks in an
+era of escalating cyber threats.
