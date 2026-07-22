@@ -1,0 +1,451 @@
+PAPER: A Survey on Zero Trust Architecture: Applications and Challenges of 6G Networks
+Authors: Nurun Nahar, Karl Andersson, Olov Schelen, Saguna Saguna
+Source: IEEE Access, 2024;12:94753-94764, DOI 10.1109/ACCESS.2024.3425350
+
+================================================================
+* ABSTRACT
+================================================================
+As sixth-generation (6G) cellular networks emerge with unparalleled
+connectivity and capabilities, security vulnerabilities are amplified due
+to a broader array of devices and sensors compared to earlier generations.
+Traditional perimeter-based security frameworks assume entities inside
+defined perimeters are reliable, authorizing access based on roles and
+permissions — a strategy insufficient when attacks may originate from
+any source, including inside the network. Zero Trust Architecture (ZTA),
+operating on "never trust, always verify," assumes neither users nor
+devices are inherently trusted and continuously evaluates risk before
+granting access. This survey explores ZTA's significance in contemporary
+network security, describes the role of authentication and access control,
+presents state-of-the-art techniques across scenarios, examines ZTA
+applicability in 6G networks with associated challenges and opportunities,
+reviews case studies demonstrating practical ZTA deployment in 6G or
+comparable networks, and identifies research gaps for future investigation.
+
+================================================================
+* INTRODUCTION
+================================================================
+- 6G will deliver ultra-high data rates (~1 Tbps), extremely low latency
+  (~0.1 ms), AI-native networking, massive IoT connectivity (10^7
+  devices/km^2), holographic communication, smart cities, autonomous
+  systems, and advanced healthcare.
+- The proliferation of connected devices (projected ~43 billion) massively
+  expands the attack surface, rendering traditional perimeter-based
+  security ineffective — once inside the network, attackers can move
+  laterally undetected.
+- Zero Trust follows "Never Trust, Always Verify," requiring continuous
+  authentication of every user, device, and transaction regardless of
+  network location.
+- The paper positions ZTA as a fundamental security paradigm shift for 6G
+  given 6G's openness, heterogeneity, and decentralization.
+- Stated contributions:
+  1. Comprehensive survey of Zero Trust Architecture specifically for 6G
+     networks.
+  2. In-depth review of state-of-the-art authentication and access-control
+     mechanisms, including MFA, continuous authentication, RBAC/ABAC/PBAC.
+  3. Examination of real-world case studies and practical ZTA applications
+     in 6G or comparable networks (smart healthcare, IoT, autonomous
+     vehicles, industrial systems).
+  4. Identification of research gaps, open challenges, and future research
+     directions for integrating ZTA into 6G.
+
+================================================================
+* BACKGROUND
+================================================================
+6G Network Vision:
+- 6G is expected to integrate AI/ML natively, cloud computing, edge
+  computing, digital twins, massive IoT, UAVs/drones, autonomous
+  vehicles, holographic and tactile communication, satellite-terrestrial
+  integrated networks (non-terrestrial networks).
+- Unlike 5G, 6G will be highly decentralized, open, heterogeneous, and
+  span air-ground-space-sea domains, making perimeter defense obsolete.
+
+Traditional Security Limitations:
+- Perimeter-based models (firewalls, VPNs) assume internal network trust;
+  remote work, BYOD, cloud adoption, and IoT invalidate this.
+- Attacks increasingly originate from inside (insider threats, compromised
+  devices), and lateral movement goes undetected behind the perimeter.
+
+Zero Trust Architecture (ZTA) Principles (per NIST SP 800-207):
+- Continuous verification: every access request verified in real time.
+- Least privilege: minimal access rights, just-in-time (JIT) elevation.
+- Assume breach: design for breach containment (microsegmentation).
+- Microsegmentation: network divided into isolated zones.
+- Continuous monitoring: log and analyze all traffic/behavior.
+- Risk-based dynamic access decisions: policy adapts to context (device
+  health, location, behavior, threat intel).
+- All data sources and computing services considered resources; all
+  communication secured regardless of network location.
+
+Logical Components of ZTA Stack (Figure 1 in paper):
+- Policy Engine (PE): makes access decisions based on policy + external
+  input (threat intel, identity management, SIEM).
+- Policy Administrator (PA): generates/revokes session tokens; manages
+  authentication/authorization flows.
+- Policy Enforcement Point (PEP): enables/monitors/terminates connections
+  between user and resource.
+- Identity Provider (IdP): manages user/device identities and credentials.
+- Continuous Monitoring System: feeds real-time posture/behavior data to
+  the policy engine for dynamic trust evaluation.
+
+================================================================
+* OBJECTIVES
+================================================================
+1. Study and present Zero Trust Architecture as a security paradigm for
+   future 6G networks, explaining why perimeter-based security fails in
+   6G's open, heterogeneous, decentralized environment.
+2. Review and categorize state-of-the-art authentication techniques
+   (biometric, behavioral, multi-factor, continuous) and access control
+   models (RBAC, ABAC, PBAC) applicable to ZTA.
+3. Identify key challenges and open issues in implementing ZTA in 6G
+   networks — scalability, latency, interoperability, privacy,
+   resource-constrained devices, quantum threats.
+4. Analyze practical case studies demonstrating ZTA in 6G or comparable
+   network scenarios (smart healthcare, industrial IoT, autonomous
+   transportation, smart cities).
+5. Suggest future research directions — AI-driven ZT, blockchain identity,
+   quantum-safe crypto, lightweight IoT ZT, edge-native ZT, autonomous
+   policy management, digital twin security.
+
+================================================================
+* LITERATURE REVIEW
+================================================================
+The paper reviews and categorizes prior work across these themes:
+
+Traditional perimeter-based security models:
+- Firewalls and VPNs [25] — inadequate for modern distributed environments
+  since they authenticate post-connection, not pre-connection.
+- Assumption of trusted internal network is increasingly invalid [20],[28].
+
+Zero Trust fundamentals and frameworks:
+- NIST SP 800-207 Zero Trust Architecture [46],[56] — the canonical
+  reference defining ZT principles, logical components, deployment models.
+- Forrester's original ZT model by Kindervag [41],[53] — "never trust,
+  always verify," network perimeters are obsolete.
+- DoD ZT Reference Architecture — military-specific ZT guidance.
+- Syed et al. [18] — comprehensive ZTA survey covering principles,
+  models, challenges across multiple domains.
+
+Authentication and access control in ZTA:
+- Multi-factor authentication (MFA) — combining passwords, biometrics,
+  OTP, PKI [9],[14].
+- Continuous authentication — behavioral biometrics, keystroke dynamics,
+  gait analysis, mouse movement [9],[23].
+- Access control models: RBAC (role-based), ABAC (attribute-based), PBAC
+  (policy-based) [21],[27],[44].
+- Risk-based adaptive access decisions [21],[57].
+- Identity and Access Management (IAM) and federated identity [64],[65].
+
+AI/ML for ZTA security:
+- Machine learning for anomaly detection, threat prediction [12],[23],[35].
+- Deep learning intrusion detection in IoT/5G [24],[35].
+- Intelligent ZTA (i-ZTA) for 5G/6G using AI [16],[57].
+- AI for automated policy management and adaptive trust scoring [36],[68].
+
+Blockchain for decentralized identity and trust:
+- Self-sovereign identity (SSI) and verifiable credentials [64].
+- Distributed ledger technologies (DLT) for tamper-proof audit logs [65].
+- Blockchain-based ZT frameworks for 6G RAN [11],[65].
+
+Edge/cloud security and SDP:
+- Software-Defined Perimeter (SDP) as ZT implementation [27].
+- Fog/edge computing security models beyond perimeter [20],[29].
+- Cloud security and SASE (Secure Access Service Edge) [51],[54].
+
+6G-specific security:
+- 6G security requirements and threat landscape [32],[33].
+- ZT for 6G architecture [34] — Chen et al. propose software-defined ZTA
+  with adaptive cross-domain access control.
+- O-RAN and ZT for open radio access networks [16].
+- Network slicing security in 5G/6G [16],[34].
+
+Gap identified (explicitly stated in Sections I and VI):
+Existing approaches address individual security mechanisms (auth,
+encryption, monitoring) in isolation. Comprehensive Zero Trust
+integration for complex, heterogeneous, decentralized 6G ecosystems —
+covering authentication, access control, continuous trust evaluation,
+and policy orchestration end-to-end — remains an open research challenge.
+Prior ZT work (e.g., [15],[16],[34]) focuses on core-network security or
+specific slices, but does not fully address holistic ZTA deployment across
+the full 6G stack (device, RAN, edge, core, cloud, application).
+
+================================================================
+* METHODOLOGY
+================================================================
+This is a survey/review paper, not an implementation paper. The authors
+follow a structured literature-survey methodology:
+
+1. Background study (Section II): Review of 6G network security background
+   and prior literature to establish context — evolution from 5G to 6G,
+   key enabling technologies, and why 6G demands new security thinking.
+
+2. Security aspects of 6G (Section III): Systematic examination of 6G
+   network security dimensions — threat landscape, attack vectors,
+   security requirements for different 6G use cases (eMBB+, URLLC+, mMTC+,
+   holographic, tactile, autonomous). Analysis of how existing security
+   mechanisms (IPsec, firewalls, VPNs) are insufficient for 6G's openness.
+
+3. Zero Trust model and principles (Section IV): Introduction of ZTA
+   framework — core assumptions (network always hostile, no implicit trust,
+   least privilege, continuous verification), logical architecture
+   (Policy Engine, Policy Administrator, Policy Enforcement Point,
+   Identity Provider, Continuous Monitoring). Comparison of ZT deployment
+   models per NIST SP 800-207.
+
+4. Authentication and access control analysis (within Section IV):
+   Comparative evaluation of authentication techniques:
+   - Password-based vs. MFA vs. biometric vs. behavioral/continuous
+   - Access control: RBAC vs. ABAC vs. PBAC — trade-offs in granularity,
+     scalability, complexity, 6G suitability.
+   Criteria: security strength, usability, latency impact, scalability,
+   device resource requirements.
+
+5. Case studies and applications (Section V): Analysis of ZTA deployment
+   in real-world or simulated 6G/comparable scenarios:
+   - Smart healthcare (IoT medical devices, continuous patient monitoring)
+   - Industrial IoT / Industry 4.0 (smart manufacturing, critical
+     infrastructure)
+   - Autonomous transportation (V2X, connected autonomous vehicles)
+   - Smart cities (distributed sensors, public infrastructure)
+   - 5G/6G core networks and O-RAN
+   Each case analyzed for: ZT components used, implementation approach,
+   observed benefits, limitations.
+
+6. Research-gap identification and future directions (Section VI):
+   Synthesis of open challenges and mapping to future research
+   opportunities. Cross-referenced with limitations found in case studies.
+
+================================================================
+* DIAGRAM (ER DIAGRAM / DFD EQUIVALENT)
+================================================================
+Note: This is a survey paper. The closest structural equivalents are its
+conceptual architecture diagrams, summarized as text below.
+
+Figure 1 — Logical Components of ZTA stack (from paper):
+  +------------------+     +---------------------+
+  | Identity Provider|---->|   Policy Engine     |
+  | (IdP)            |     | (makes access       |
+  +------------------+     |  decisions)         |
+          |                +----------+----------+
+          |    +----------------+     |
+          |    | Policy Admin  |<----+
+          |    | (generates /  |
+          |    | revokes       |
+          |    | session       |
+          |    | tokens)       |
+          |    +-------+------+
+          |            |
+  +-------v------------v------+
+  | Policy Enforcement Point  |
+  | (PEP) — enables/monitors/ |
+  | terminates connections    |
+  +---------------------------+
+          |
+  +-------v--------+   +-----------------------+
+  |    Resource    |   | Continuous Monitoring |
+  | (server, data, |   | (feeds real-time      |
+  |  app, service) |   |  posture/behavior)    |
+  +----------------+   +-----------------------+
+
+Comparison flow — Traditional vs. Zero Trust (derived from paper):
+  Traditional:
+  User --> [Firewall] --> Internal Network (trusted)
+     --> All internal resources accessible once inside perimeter
+     --> Lateral movement possible
+     --> No continuous verification
+
+  Zero Trust:
+  User/Device --> Identity Verification --> Policy Engine
+     --> Risk Assessment --> Policy Decision
+     --> Least-Privilege Access --> Protected 6G Resource
+     --> Continuous Monitoring feeds back to Policy Engine
+     --> No implicit trust regardless of location
+
+ZT layered onto 6G architecture (conceptual, based on paper's discussion):
+  UE/Device (identity + posture verified)
+    |--5G/6G RAN---> Mobile Core (AMF, SMF, UPF)
+                          |--ZT PEP---> Edge/Cloud Applications
+                          |--ZT Controller (PE + PA)--->
+                          |--Continuous Monitoring <--->
+  Each layer (RAN, Core, Edge, Cloud, App) has PEP; all inter-layer
+  communication authenticated, authorized, encrypted, and monitored.
+
+Table 1 (referenced in paper — comparison of auth/access control):
+  +=====================+============+==========+============+
+  | Technique           | Security   | Latency  | Scalability |
+  +=====================+============+==========+============+
+  | Password-based      | Low        | Low      | High        |
+  | Multi-factor (MFA)  | High       | Medium   | Medium      |
+  | Biometric           | High       | Medium   | Medium      |
+  | Continuous/Behavior | Very High  | High     | Low-Medium  |
+  | RBAC                | Medium     | Low      | High        |
+  | ABAC                | High       | Medium   | Medium      |
+  | PBAC                | Very High  | High     | Low-Medium  |
+  +=====================+============+==========+============+
+
+================================================================
+* METHODS (evaluation & analysis techniques)
+================================================================
+- Literature survey: Systematic review of 68+ references spanning
+  6G security, ZTA frameworks, authentication, access control,
+  AI/ML security, blockchain trust, and industry case studies.
+- Comparative analysis: Side-by-side comparison of authentication
+  methods (password vs. MFA vs. biometric vs. behavioral/continuous)
+  and access control models (RBAC vs. ABAC vs. PBAC) across dimensions
+  of security strength, latency, scalability, and deployment complexity.
+- Case-study analysis: In-depth examination of ZTA deployment scenarios
+  (smart healthcare, industrial IoT, autonomous vehicles, smart cities)
+  extracting common patterns, benefits, and limitations.
+- Research-gap identification: Cross-analysis of existing literature
+  and case-study findings to map unresolved challenges to future
+  research directions.
+- No empirical experiments or simulations — purely analytical survey.
+
+================================================================
+* SYSTEM REQUIREMENTS
+================================================================
+Conceptual ZTA components for 6G deployment (as discussed in paper):
+  - Identity Provider (IdP): manages user/device identities, credentials,
+    and trust anchors across heterogeneous 6G domains.
+  - Policy Engine (PE): AI-assisted decision engine evaluating identity,
+    device posture, behavioral context, threat intelligence, and risk
+    score in real time.
+  - Policy Administrator (PA): generates session tokens, manages
+    authentication flows, enforces just-in-time privilege elevation.
+  - Policy Enforcement Point (PEP): gateway/enforcer at every network
+    segment (RAN, core, edge, cloud, application) — can be SW or HW.
+  - Continuous Monitoring System: telemetry collection across network
+    traffic, user behavior, device health, application logs; feeds ML
+    anomaly detection.
+  - Multi-Factor Authentication (MFA) module: supports OTP, biometric,
+    PKI, hardware tokens — adaptable to device capabilities.
+  - Risk Assessment Engine: dynamic trust scoring based on device
+    posture, location, time, behavior patterns, threat intel feeds.
+  - AI-assisted Security Analytics: ML models for threat detection,
+    behavioral profiling, automated policy adjustment.
+  - Secure 6G Core Network: 3GPP-compliant core with ZT integration
+    at AMF, SMF, UPF, NEF, etc.
+  - Edge/Cloud Infrastructure: distributed PEPs and monitoring agents
+    at edge nodes and cloud data centers.
+  - Quantum-safe cryptography modules: post-quantum cryptographic
+    algorithms for long-term security of keys and communications.
+
+================================================================
+* RESULTS
+================================================================
+Findings from the survey and case-study analysis:
+
+1. ZTA effectiveness for 6G:
+   - Significantly improves security posture by eliminating implicit trust
+     and enforcing continuous verification at every network layer.
+   - Reduces lateral movement: microsegmentation isolates breaches and
+     prevents attacker propagation.
+   - Protects distributed resources: PEP at every segment (RAN, edge,
+     core, cloud) ensures consistent policy regardless of device location.
+   - Supports heterogeneous environments: identity-centric approach works
+     across IoT, smartphones, vehicles, UAVs, industrial controllers.
+
+2. Authentication technique comparison findings:
+   - MFA provides strong baseline security but adds latency and usability
+     friction; behavioral/continuous authentication offers highest security
+     but requires significant compute resources and ML infrastructure.
+   - No single authentication method fits all 6G use cases — adaptive,
+     context-aware multi-factor auth is recommended.
+   - Lightweight continuous auth schemes are needed for resource-
+     constrained IoT devices.
+
+3. Access control model findings:
+   - ABAC offers the best balance of granularity and scalability for 6G
+     ZTA, supporting dynamic policy based on subject/object/action/
+     environment attributes.
+   - PBAC provides the most fine-grained control but introduces policy
+     management complexity.
+
+4. Case-study insights:
+   - Smart healthcare: ZTA successfully prevents unauthorized access to
+     patient data and medical IoT devices; continuous monitoring detects
+     anomalous behavior in real time.
+   - Industrial IoT: microsegmentation limits blast radius from compromised
+     OT devices; ZT policy engine adapts to device posture changes.
+   - Autonomous vehicles/V2X: ZTA secures communication between vehicles,
+     infrastructure, and cloud; identity-based auth for vehicle-to-everything
+     prevents spoofing and replay attacks.
+   - Smart cities: distributed PEPs at edge nodes enforce consistent
+     policies across thousands of heterogeneous sensors and actuators.
+
+5. Remaining challenges identified:
+   - Deployment complexity: integrating ZTA with legacy infrastructure and
+     existing 5G/6G core network functions is non-trivial.
+   - Scalability: continuous monitoring and real-time policy evaluation
+     for billions of devices poses computation and bandwidth challenges.
+   - Latency overhead: authentication and policy checks add delay —
+     critical for URLLC applications requiring sub-millisecond response.
+   - Privacy: continuous behavioral monitoring raises data privacy
+     concerns; privacy-preserving ZTA mechanisms needed.
+   - Interoperability: ZTA components from different vendors must
+     interoperate across heterogeneous 6G multi-domain environments.
+   - Resource constraints: lightweight ZT implementations needed for
+     IoT sensors, wearables, and other low-power devices.
+   - Quantum threats: current cryptographic foundations of ZTA (PKI,
+     TLS) vulnerable to quantum attacks; post-quantum transition needed.
+
+================================================================
+* FUTURE DIRECTIONS
+================================================================
+- AI-driven adaptive Zero Trust: ML models for real-time risk scoring,
+  behavioral anomaly detection, automated policy adjustment, and
+  predictive threat prevention in dynamic 6G environments.
+- Blockchain-integrated identity management: decentralized identity
+  (self-sovereign identity, verifiable credentials) and tamper-proof
+  audit trails using DLT/blockchain for multi-domain ZTA.
+- Quantum-resistant cryptography: transition to post-quantum crypto
+  (lattice-based, hash-based, code-based) to secure ZTA components
+  (authentication, key exchange, digital signatures) against quantum
+  attacks.
+- Lightweight authentication for IoT: ultra-lightweight continuous
+  authentication and encryption schemes for resource-constrained
+  6G IoT devices (sensors, wearables, nano-devices).
+- Secure network slicing with ZT: integrating ZTA policy enforcement
+  into 6G network slicing — per-slice identity, auth, and micro-
+  segmentation.
+- Federated identity management: cross-domain, cross-operator identity
+  federation for seamless ZTA across 6G multi-domain (terrestrial,
+  satellite, aerial) environments.
+- Edge-native Zero Trust: distributed PEP and policy decision at the
+  edge (MEC) to reduce latency; edge-based continuous monitoring with
+  localized ML inference.
+- Digital twin security: ZTA for securing digital twins and their
+  bidirectional communication with physical 6G systems.
+- Autonomous policy management: intent-based networking and closed-loop
+  automation for self-configuring, self-optimizing ZTA policies.
+- Privacy-preserving ZTA: differential privacy, homomorphic encryption,
+  and federated learning for continuous monitoring without exposing
+  sensitive user data.
+- ZTA for O-RAN: integrating ZT principles into open radio access
+  network architecture for secure multi-vendor RAN deployments.
+
+================================================================
+* CONCLUSION
+================================================================
+Zero Trust Architecture is expected to become a core security model for
+6G networks, addressing the fundamental inadequacy of perimeter-based
+security in 6G's open, heterogeneous, ultra-dense, and decentralized
+environment. By enforcing "never trust, always verify" — continuous
+authentication, least-privilege access, microsegmentation, and real-time
+monitoring — ZTA provides significantly stronger protection against
+both external and internal threats compared to traditional approaches.
+The survey demonstrates that authentication techniques (MFA, biometric,
+continuous) and access control models (ABAC, PBAC) each offer distinct
+trade-offs, and recommends adaptive, context-aware, multi-factor
+approaches for 6G. Case studies across smart healthcare, industrial IoT,
+autonomous vehicles, and smart cities confirm ZTA's practical viability
+and benefits. However, several technical challenges remain — deployment
+complexity, scalability for billions of devices, latency overhead,
+privacy concerns, interoperability, resource constraints on IoT devices,
+and vulnerability to quantum computing. Future research must address
+these through AI-driven ZT, blockchain identity, quantum-safe
+cryptography, lightweight IoT schemes, edge-native enforcement, and
+autonomous policy management. Overall, ZTA offers a promising and
+necessary foundation for building secure, scalable, and resilient 6G
+communication networks capable of supporting mission-critical and
+safety-critical applications in the 2030s and beyond.
+
