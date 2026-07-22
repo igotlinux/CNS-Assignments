@@ -1,0 +1,269 @@
+PAPER REPORT
+Title: A Context-Aware Zero Trust-Based Hybrid Approach to IoT-Based Self-Driving Vehicles Security
+Authors: Izhar Ahmed Khan, Marwa Keshk, Yasir Hussain, Dechang Pi, Bentian Li,
+         Tanzeela Kousar, Bakht Sher Ali
+Journal: Ad Hoc Networks, Vol. 167 (2025), Article 103694
+Publisher: Elsevier
+
+===================================================================
+1. ABSTRACT
+===================================================================
+With rapid adoption of IoT devices in self-driving vehicles (SDVs), the
+autonomous driving industry faces significant security and privacy risks.
+The paper proposes a new secure and efficient Intrusion Detection System
+(IDS) approach using a Zero Trust (ZT) model. It introduces a context-aware
+ZT security framework for IoT-based SDVs that evaluates device
+trustworthiness through a multi-source trust and reputation model,
+incorporates a crawler system to keep the framework unbiased, and adds an
+observer module using machine learning to detect malicious actions.
+Experiments on two benchmark datasets (Car Hacking and ToN_IoT) show the
+framework achieves 99.43% and 99.52% accuracy respectively, demonstrating
+its robustness for real-world transport systems.
+
+===================================================================
+2. INTRODUCTION
+===================================================================
+Self-driving vehicles (SDVs)/autonomous vehicles (AVs) operate without
+human drivers and rely on numerous sensors, actuators, and communication
+equipment. While SDVs promise improved safety and efficiency, they face
+significant cybersecurity threats because their large attack surface
+(sensors, external indicators, IoT devices) attracts hackers. Attacks can
+leak driver/vehicle information (location, occupancy, gender, etc.).
+In-vehicle communication (IVC) and vehicle-to-vehicle communication (VtVC)
+are coordinated by the Electronic Control Unit (ECU), which must exchange
+data securely.
+
+Security Challenges of Autonomous Vehicles: The Controller Area Network
+(CAN) protocol, the de-facto standard for IVC, lacks sender identity
+verification, making it vulnerable. Key attack types include:
+- Spoofing Attacks: trick the vehicle about location/situation.
+- Replay and Fuzzing Attacks: replay captured traffic or inject random
+  messages to cause abnormal vehicle behavior.
+- Tampering Attacks: falsify vision inputs or tamper with software updates
+  to gain unauthorized control access.
+- Data Breach Attacks: steal sensitive location/driver information.
+- Flooding Attacks: exploit CAN bus bandwidth via message flooding.
+Common attacks also include eavesdropping, brute force, replay, DDoS/DoS,
+and route modification.
+
+Motivation and Contribution: Zero Trust follows "verify and never trust,"
+assuming every access request (internal or external) is untrusted and
+must be continuously verified. The authors combine ZT with AI/ML to build
+a more powerful, granular security framework. Contributions:
+1. A context-aware trust evaluation model using multi-source data.
+2. A crawler method to keep the framework reliable and unbiased.
+3. An observer module using ML to detect abnormal data/attacks.
+
+===================================================================
+3. BACKGROUND / LITERATURE REVIEW
+===================================================================
+The paper reviews ML-enabled security methods and CAN-based network
+security research, summarized in Table 1, comparing 14 prior approaches:
+- Ensemble learning, CNN, LSTM, BiLSTM, DNN, and Feed-forward neural
+  network models applied to IoT/IoMT networks — generally good accuracy
+  but mostly non-trust-based approaches, tested on limited attack types
+  or datasets, and with issues like high false-alarm rate (FAR) or long
+  training time.
+- Blockchain + Deep Learning models — higher accuracy but tested on
+  non-IoT data and lacking trust mechanisms.
+- Generative Adversarial Networks (GANs) for vehicular networks — 16.4%
+  reduction in attacks but require heavy manual preprocessing.
+- Zero-trust architecture papers for Connected/Autonomous Vehicles ([21])
+  — simple architecture but limited to CAN bus communication, not
+  suitable for IoT networks.
+- Zero-trust architecture for Autonomous Vehicles ([22]) — improved
+  performance but focuses only on data reconstruction attacks.
+
+CAN-specific approaches reviewed: message periodicity-based detection
+(inter-arrival time anomalies), one-class SVM based on frequency, entropy-
+based anomaly detection (stable entropy baseline vs. unsteady attack
+patterns), and arbitration ID sequencing (transition matrix approach,
+effective against mimicry but not replay attacks). FPGA-based IDS was
+also reviewed but limited to FPGA platforms.
+
+Gap identified: Most existing work emphasizes detection performance while
+neglecting the zero-trust aspect; IoT-based zero-trust architecture is
+understudied due to lack of realistic representative datasets. This work
+aims to fill that gap.
+
+===================================================================
+4. OBJECTIVES
+===================================================================
+- Propose a context-aware trust evaluation model using multi-source data.
+- Develop a crawler mechanism for framework reliability/fairness.
+- Introduce a ML-based observer module to detect abnormal/malicious data.
+- Validate the framework on two real-world benchmark datasets for SDV/IoT
+  security.
+
+===================================================================
+5. METHODOLOGY
+===================================================================
+--- 5.1 Diagram (System Overview) ---
+Fig. 1 (Flowchart of proposed ZT security framework): SDV with icons for
+various IoT sensors (device/sensor list) feeds into a "Build Trust List
+Database," which connects to the central "Trust Management System." This
+splits into a Trust Module (content-based and cooperation-based sub-
+components feeding a Trust Assessment engine) and a Context Module
+(Feedback Mechanism and Feedback Crawler Mechanism). The Trust Management
+System routes to an "Observer Module" which classifies devices as
+Malicious -> Observed Devices, or Trustworthy -> Security Module, which
+outputs Normal Data or Attack Data classification.
+
+--- 5.2 System Architecture (layered design) ---
+1. Primary Layer: SDVs with IoT sensors generate and transmit data.
+2. Device List Layer: preprocessing (label encoding, scaling) and trust
+   score computation (content-based + cooperation-based trust) via the
+   Trust Management System.
+3. Context Update Layer: feedback and feedback-crawling mechanisms update
+   device context; low-ranking sensors are monitored by the observer.
+4. Security/Detection Layer: ML model (XGBoost/Gradient Boosting) detects
+   intrusions/abnormalities on the final trusted data stream.
+
+Algorithm 1 (Proposed ML-enabled Zero-Trust Security Framework) pseudocode
+covers: (a) Initialization — label encoding, scaling, loading trust scores,
+setting trust threshold and weight factors (alpha, beta, gamma); (b)
+Context-Aware Trust Module — compute context, ranking, feedback/crawling,
+and trust score for every sensor; (c) Security Module — split
+training/testing data, train and predict, compute objective function,
+control overfitting, calculate loss, optimize.
+
+--- 5.3 Trust Module (Methods) ---
+Trust is defined per literature (McKnight & Chervany; Gambetta; Hussain et
+al.) as willingness to depend on an entity despite possible negative
+consequences. The framework computes Trust Assessment (TA) in range [0,1]
+using two techniques:
+- Content-based method: computes relevance of context between
+  communicating devices/sensors; applies an incentive/penalty system based
+  on transmitted content; helps detect malicious data and mitigate the
+  cold-start problem.
+- Cooperation-based method: builds a device's trust score by associating
+  it with the trust scores of other sensors/SDVs it has interacted with.
+
+Multi-source trust formula (Eq. 1-3): New trust score = alpha x Current
+Trust + beta x (average content-based trust from trust list) + gamma x
+(average cooperation-based trust from trust list), where alpha, beta,
+gamma are tunable weight factors.
+
+Ranking process (Eq. 4, Algorithm 2): Computes a CON(sid) score by
+aggregating ranking scores (R(s)) from associated, well-ranked links,
+divided by the number of associations (AS(s)). Table 2 in the paper
+defines ranking interpretation bands: 0-0.3 = Bad/Low, 0.4-0.6 = Average,
+0.7-1 = Good Ranking.
+
+--- 5.4 Context Module (Methods) ---
+- Feedback Mechanism (Eq. 5): computes gain/loss in trust score as the
+  difference between new and current trust score (range -1 to +1);
+  negative = loss, positive = gain; punishment/reward system to keep the
+  framework unbiased.
+- Feedback Crawler Mechanism (Eq. 6): periodically (time period tp)
+  reassesses trust scores based on context and behavior history.
+- Observer Component (Eq. 7): activates observation mode (flag = 1) for
+  any device whose trust score falls below the Trust-Threshold; flag = 0
+  otherwise. Adds an extra layer of monitoring for suspicious devices.
+
+--- 5.5 ML-Based Security Module (Methods) ---
+Uses Gradient Boosting Machine (GBM), implemented via XGBoost. Builds an
+ensemble of decision trees sequentially, each correcting the errors of its
+predecessor (Eq. 8-10). Objective function combines a loss function (L)
+and regularization term (Omega) to control both accuracy and overfitting
+(Eq. 11-14):
+- Omega = gamma*tau + (1/2)*lambda*sum(leaf weights^2) — controls tree
+  complexity/leaf count.
+- L = binary cross-entropy loss between actual and predicted labels.
+- Model trained iteratively (boosting/additive method), each new tree
+  added based on the prior round's prediction error.
+
+--- 5.6 System Requirements (Experimental Setup) ---
+- Language/Framework: Python-based TensorFlow (via Anaconda).
+- OS: Ubuntu
+- Hardware: Intel(R) 4110 @ 2.10GHz CPU, NVIDIA RTX2080 GPU, 1.28e8 kB RAM.
+- Libraries: Scikit-learn.
+- XGBoost parameters: booster = gbtree, refresh_leaf = 1, max_depth = 10,
+  num_parallel_tree = 1, importance_type = gain, learning_rate = 1,
+  subsample = 0.5, max_delta_step = 0, sampling_method = gradient-based,
+  n_estimators = 20, random_state = 2.
+
+--- 5.7 Datasets ---
+- CHADC (Car Hacking: Attack & Defense Challenge 2020) dataset: generated
+  using a 2000 Hyundai Avante CN7 model; contains normal and attack CAN
+  traffic including Fuzzing, Spoofing, Flooding, and Replay attacks; 6
+  fields (Timestamp, Arbitration_ID, DLC, Data, Class, SubClass).
+- ToN_IoT dataset: created via IoT testbed with heterogeneous devices
+  (Thermostat, Fridge, GPS, Motion Light, etc.); contains 245,000 normal
+  samples plus seven attack families: DDoS (25,000), Password (35,000),
+  Scanning (3,973), XSS (6,116), Ransomware (16,030), Injection (35,000),
+  Backdoor (35,000); 22 fields, labeled normal/abnormal.
+
+===================================================================
+6. RESULTS
+===================================================================
+--- 6.1 Weight Influence in Trust Assessment ---
+Using ValueSet1/2/3 for alpha/beta/gamma (Table 4), experiments (Fig. 3, 5)
+showed the framework produces low/high trust scores depending on the
+relationship between beta and gamma (gamma < beta yields different results
+than gamma > beta), confirming that weight-factor tuning strongly affects
+trustworthiness calculations and can be used to prioritize trust sources.
+
+--- 6.2 Observer Module Influence ---
+The observer module successfully classified malicious nodes as
+non-trustworthy (trust score below Trust-Threshold). Results (Fig. 5) show
+better security performance is achievable through proper weight-factor
+tuning, and the context-aware feedback/crawler mechanisms help the
+framework detect and track malicious devices across the network.
+
+--- 6.3 Attack-Detection Efficiency ---
+Using the optimized XGBoost model (Table 5):
+- CHADC Data: 99.43% Accuracy, 99.42% F1-measure, 99.44% Precision, 98.94%
+  Recall.
+- ToN_IoT Data: 99.52% Accuracy, 99.51% F1-measure, 99.53% Precision,
+  99.10% Recall.
+- Average across both datasets: 99.47% Accuracy, 99.46% F1, 99.48%
+  Precision, 99.03% Recall.
+- ROC/AUC (Fig. 4): 99.43% AUC for CHADC, 99.52% AUC for ToN_IoT,
+  confirming strong discriminative capability.
+- Detection rates across attack types (Fuzzing, Spoofing, Flooding,
+  Replay) remained steady and improved with increasing sensor/device
+  count (Fig. 6).
+
+--- 6.4 Comparative Analysis (Table 6) ---
+Compared against SOTA methods: Zero Trust IDS (96%), ZT-NIDS (93.01%),
+Fog-cloud ensemble model (96.35%), CNN Model (94.15%), SDN+Reinforcement
+Learning (83.10%), Distributed attack detection (98.27%). The proposed
+framework's average (99.47%) outperformed all baselines by an average
+improvement of 5.99%.
+
+===================================================================
+7. FUTURE DIRECTIONS
+===================================================================
+The authors note that trust tables built on historical communication
+experience could be exploited if malicious devices provide fake trust
+values for other devices — a potential vulnerability. Future work plans:
+developing federated trust models to provide end-to-end security across
+multiple autonomous vehicle companies, enabling early-stage, collaborative
+attack detection through a zero-trust approach without centralizing
+sensitive data.
+
+===================================================================
+8. CONCLUSION
+===================================================================
+Security threats against SDVs are increasing and threaten both the
+progression of intelligent transportation systems and human safety. This
+paper's proposed ZT security framework integrates device/sensor context
+into the trust assessment process, using an observer module and a
+state-of-the-art ML (XGBoost) security module. Through extensive
+experiments on CHADC and ToN_IoT datasets, the framework outperformed
+benchmark models (99.47% average accuracy, 5.99% average improvement over
+SOTA), demonstrating the value of ZT architectures combined with ML for
+IoT-based SDV security.
+
+===================================================================
+RELEVANCE TO "ZTA FOR WSN" TOPIC
+===================================================================
+This paper's context-aware, multi-source trust and reputation model
+(content-based + cooperation-based trust, feedback/crawler mechanisms, and
+an ML-based observer module) is highly transferable to Wireless Sensor
+Networks, where nodes are similarly distributed, resource-constrained, and
+vulnerable to spoofing, flooding, and data-tampering attacks. The
+trust-score formulation (Eq. 1-7) and lightweight GBM-based detection
+module offer a concrete methodology that could be adapted for WSN node
+trust evaluation and intrusion detection under a Zero Trust paradigm.

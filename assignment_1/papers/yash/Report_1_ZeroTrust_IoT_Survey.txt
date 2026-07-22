@@ -1,0 +1,325 @@
+PAPER REPORT
+Title: Verify and Trust: A Multidimensional Survey of Zero-Trust Security in the Age of IoT
+Authors: Muhammad Ajmal Azad, Sidrah Abdullah, Junaid Arshad, Harjinder Lallie, Yussuf Hassan Ahmed
+Journal: Internet of Things, Vol. 27 (2024), Article 101227
+Publisher: Elsevier
+
+===================================================================
+1. ABSTRACT
+===================================================================
+The paper surveys the Zero-Trust (ZT) security model, which assumes no user,
+device, or network traffic should be trusted until proven otherwise. It
+explains that access is granted only after successful authentication of
+credentials and evaluation of factors such as user identity, device health,
+location, and behaviour, with continuous re-evaluation as these properties
+change. The authors argue ZT can be applied across domains (healthcare,
+manufacturing, finance, government) to reduce risk and protect critical
+assets. The paper aims to give an in-depth analysis of ZT principles,
+components, and practical applications, and to provide recommendations for
+organizations adopting it, along with open research issues around security
+and privacy.
+
+===================================================================
+2. INTRODUCTION
+===================================================================
+The introduction motivates ZT by citing the explosive growth of IoT devices
+(41+ billion devices), rising data breach costs ($4.45 million average in
+2023, a 15% increase over three years), and projected cybercrime costs of
+$10.5 trillion by 2025. It contrasts traditional perimeter-based security
+(which trusts everything inside the network once access is granted) with
+Zero Trust, which continuously verifies and authenticates users, devices,
+and applications regardless of location. The authors note that implementing
+ZT in heterogeneous, BYOD-heavy networks is challenging due to complexity,
+interoperability, cost, and user experience issues. They state this is the
+first attempt at a comprehensive survey of ZT across authentication,
+authorization, architecture, and application domains, and align their
+review with the MITRE ATT&CK framework.
+
+Paper Selection Methodology:
+- Databases searched: ACM Digital Library, IEEE Xplore, Science Direct,
+  Scopus, and Google Scholar.
+- Initial queries: "zero trust architecture," "zero trust models," "zero
+  trust frameworks," followed by advanced queries on security aspects,
+  segmentation, authentication/authorization, IoT/cloud, and blockchain.
+- Inclusion criteria: peer-reviewed papers (2010 onward) focused on security
+  aspects of ZTA (architecture, implementation, or technology).
+- Exclusion criteria: papers describing only commercial ZTA variants, papers
+  lacking functional component definitions, non-English papers.
+- Search yielded 24 (ACM), 36 (Science Direct/Scopus), 110 (IEEE), 415
+  (Google Scholar) articles; after exclusion, 8, 13, 31, and 20 papers
+  respectively were retained (72 total papers analyzed).
+- Papers were grouped into: architecture (cloud-based: 19, IoT-based: 20,
+  blockchain-based: 12 contributions), authentication (7) and authorization
+  (12), and implementation domains.
+
+===================================================================
+3. BACKGROUND
+===================================================================
+Importance of Zero-Trust: ZT assumes all traffic, devices, and users are
+potentially malicious, enforcing least-privilege access and continuous
+verification. The paper contrasts this with perimeter security (firewalls,
+IDS/IPS, VPNs) which trusts insiders — a major weakness given that insider
+attacks rose ~47% (2022-2024) and cost an average of $15.38 million per
+incident in 2023.
+
+Requirements for Zero Trust Architecture (ZTA), the paper identifies five
+essential components:
+1. Identity Authentication - verifying users/devices/processes via
+   passwords, MFA, IAM, PKI, biometrics, and behavioural profiling.
+2. Network Segmentation - dividing the network into micro-segments/zones
+   protected by firewalls and access controls to limit lateral movement;
+   can be implemented via SDN.
+3. Authorization - enforced via ACLs, RBAC, ABAC, or policy-based access
+   control (PBAC), applying least privilege dynamically.
+4. Encryption - protecting data at rest, in transit, and in use, using
+   end-to-end or point-to-point encryption; lightweight cryptography is
+   needed for constrained IoT devices.
+5. Network Monitoring - continuous collection/analysis of logs and traffic
+   using ML/AI and IDS/IPS deployed at network, edge, or device layers.
+
+Components of Zero-Trust Architecture (NIST model): The paper describes
+three logical components:
+- Policy Decision Point (PDP): makes access/authorization decisions based
+  on policy rules, contextual data, and risk factors; should be
+  decentralized/redundant to avoid single point of failure.
+- Policy Enforcement Point (PEP): enforces the PDP's decisions; should be
+  located near the resource/user to minimize latency.
+- Policy Administrator (PA): gatekeeper managing connections, issuing
+  authentication tokens, and enforcing policy at network/application
+  levels.
+
+How Zero Trust Differs from Traditional Security: Perimeter-based security
+(Fig. 5 in paper) uses firewalls, IDS, and DMZs to protect from outsiders
+but trusts insiders — a flaw since insiders cause ~30% of breaches
+(~$11.45 million average loss). Perimeter security is reactive, inflexible
+to evolving threats (e.g., low-rate DoS/DDoS), and doesn't scale well with
+BYOD/IoT/cloud. ZTA (Fig. 6) treats all devices/users/traffic as untrusted
+regardless of origin, using MFA, ABAC/RBAC/PBAC, and continuous monitoring.
+
+===================================================================
+4. OBJECTIVES / CONTRIBUTIONS
+===================================================================
+- Discuss fundamental principles/characteristics of ZT architecture and its
+  advantages over traditional authentication.
+- Investigate the scope of ZT across authentication, authorization, access
+  control, security, privacy, and data management, and discuss challenges.
+- Review recent security/privacy defenses in academia and industry and
+  assess their feasibility.
+- Present open future research directions and questions for ZT models.
+
+===================================================================
+5. LITERATURE REVIEW
+===================================================================
+The paper reviews and tabulates (Table 2) around 60+ prior works across
+three categories:
+
+Cloud-based ZT systems: e.g., Decusatis et al. (transport-level access
+control with first-packet authentication), Hussain et al. (Intelligent
+Service Mesh with ML/AI), Ferretti et al. (survivable ZT with trust engine
+and fault-tolerant controller), Zaheer et al. (ezTrust — network-independent
+microservice protection), Mehraj & Banday (segmentation + ML threat
+detection), Eidle et al. (autonomic security framework), Sheikh et al. and
+others (micro-segmentation approaches).
+
+IoT-based ZT systems: e.g., Wenhua Huang et al. (ZT-Access using
+attribute-based encryption for power IoT), Samaniego & Deters (blockchain
+hierarchical ZT management), Zhang Xiaojian et al. (power IoT ZT
+framework), Anil G et al. (lightweight crypto + ML intrusion detection for
+Enterprise IoT), Ameer et al. (score-based authorization), Dimitrakos et
+al. (trust-aware continuous authorization using UCON/ABAC).
+
+Decentralized and blockchain-based ZT systems: e.g., Li et al. (EV charger
+ZT security with blockchain key management), Han et al. (6G edge IoT ZT
+with blockchain), Mukesh Kumar et al. (blockchain group authentication for
+6G), Patil et al. (consensus algorithm for decentralized ZT), Dhar & Bose
+(risk score with blockchain-based access control), Wu et al. and Gai Keke
+et al. (attribute-based access control via blockchain with homomorphic
+cryptosystem).
+
+The literature review is also organized around MITRE ATT&CK alignment
+(Section 3), authentication and authorization mechanisms (Section 6), and
+implementation domains such as healthcare, wireless networks, and
+enterprise networks (Section 6.1-6.3, referenced but not detailed in the
+provided excerpt).
+
+===================================================================
+6. METHODOLOGY
+===================================================================
+--- 6.1 Diagrams (described in paper) ---
+- Fig. 1: Review workflow (search queries -> 4 databases -> retrieved
+  articles -> exclusion criteria -> final database of 72 papers).
+- Fig. 2: Paper structure outline (Intro -> Background -> Security
+  Requirements/MITRE -> Adaptation/Implementations -> Authorization &
+  Access Control -> Real-World Implementations -> Discussion -> Research
+  Challenges -> Conclusion).
+- Fig. 3: Zero Trust security model - shows access requests from
+  identity/users/devices/applicants/network devices/third-party vendors
+  flowing into a "Zero Trust Policy Enforcement" engine, which either
+  allows (after MFA verification) or denies (block) access to resources
+  (network apps, data services, cloud apps, web/email, network
+  infrastructure).
+- Fig. 4: NIST Zero Trust Architecture components diagram - Policy Engine
+  and Policy Administrator (forming the PDP) connected to supporting
+  components (CDM, industry compliance, threat intelligence, activity
+  logs on one side; data access policy, PKI, identity management, SIEM on
+  the other), interfacing with the Policy Enforcement Point across a
+  control plane/data plane boundary between untrusted subject/device and
+  trusted enterprise resource.
+- Fig. 5: Traditional (perimeter-based) security architecture - onsite
+  trusted users, IoT devices, endpoint devices, BYOD connect via firewall
+  and VPN tunnel; external users pass through DMZ gateway; both converge
+  through firewalls to internal network services (applications, data, IT
+  resources, public internet, services, network resources).
+- Fig. 6: High-level Zero Trust architecture - identity/IoT
+  devices/endpoint devices/data/BYOD/processes send access requests to a
+  Policy Definition and Decision block (containing PABC/RBAC/ABAC
+  sub-modules), which communicates with a Policy Enforcement module to
+  verify, allow/block, and grant access to applications, data, public
+  internet, IT resources, services, and network resources.
+- Fig. 7: Zero-Trust mapped to MITRE ATT&CK framework - a mind-map linking
+  "ZERO-TRUST" to attack tactic categories (Initial Access, Resource
+  Development, Persistence, Privilege Escalation, Credential Access,
+  Lateral Movement, Command and Control, Defense Evasion, Impact), each
+  with specific technique lists (e.g., valid accounts, drive-by
+  compromise, phishing, brute force, process injection, data encrypted
+  for impact, etc.).
+- Fig. 8: Analysis framework for ZT implementation - branches into
+  Architecture (centralized/decentralized/distributed/cloud-based/
+  blockchain-based), Components (microsegments, authentication,
+  authorization, encryption, monitoring, logical components: PDP/PE/PEP),
+  Capabilities (authorization types: conditional/ABAC/PBAC/RBAC/MAC/DAC;
+  authentication: MFA/continuous/behaviour attributes), Attack Points
+  (user credentials, identity theft, IoT devices, PDP/PEP, third-party
+  vendor, cloud provider, policy access, traffic analysis), and Threats
+  (DoS/DDoS, tampering, spoofing, MITM, insider, misconfiguration, supply
+  chain).
+- Fig. 9: Communication setup of ZTA - five sub-diagrams comparing
+  Centralized ZTA, Distributed ZTA, Decentralized ZTA, Cloud-based ZTA,
+  and Blockchain-based ZTA network topologies.
+- Fig. 10: Seven basic pillars of ZT architecture for authentication and
+  authorization - Zero-Trust Evaluation core engine connected to Policy
+  Engine, Policy Enforcement Point, Policy Definition Data, Multifactor
+  Authentication & Biometrics, User Devices & Network Environment,
+  Applications & Processes, Device/User Analytics, Network & Traffic
+  Analytics, and Event Correlation/Anomaly Detection.
+
+--- 6.2 Methods Discussed ---
+Implementation models for ZTA (Section 4):
+- Centralized Implementation: single PDP/PE/PEP for entire organization;
+  easy to manage but single point of failure/attack, poor scalability,
+  cannot support peer-to-peer/ad-hoc networks.
+- Distributed Implementation: each network segment has its own PDP/PEP/PE;
+  resilient to segment failure, reduces attack surface, but requires
+  careful policy consistency planning and more resources.
+- Decentralized Implementation: functionality distributed across network
+  (e.g., policy definition centralized but enforcement near edge/fog
+  device); reduces attack surface and single point of failure but has
+  management overhead; can use SDN/NFV.
+- Blockchain-based Implementation: PDP/PEP implemented via smart
+  contracts on distributed ledger; provides tamper-proof records of
+  access/authorization events, enhanced security/decentralization, at the
+  cost of complexity and computational overhead.
+- Cloud-based Implementation: ZTA components hosted in cloud (PaaS/SaaS
+  used for PDP/PEP functions); offers scalability, resilience,
+  cost-effectiveness (e.g., AWS, Azure, Google Cloud for policy/access
+  management).
+
+Authorization mechanisms discussed: DAC, MAC, RBAC, ABAC, PBAC,
+Identity-Based Access Control (IBAC), Risk-Based Access Control, and
+score-based/context-aware authorization.
+
+Authentication mechanisms discussed: password-based, MFA, biometrics,
+continuous/behavioural authentication, blockchain-based authentication
+(eliminating central authority), pseudonymous authentication protocols,
+and secret-sharing-based continuous authentication without a trusted
+authority.
+
+--- 6.3 System Requirements (Essential ZTA Components) ---
+1. Identity Authentication mechanisms (password, MFA, IAM, PKI, biometrics)
+2. Network Segmentation / micro-segmentation infrastructure
+3. Authorization engine (ACL/RBAC/ABAC/PBAC)
+4. Encryption (data at rest, in transit, in use; lightweight crypto for IoT)
+5. Continuous Network Monitoring (ML/AI, IDS/IPS, SIEM)
+6. Logical components: Policy Decision Point, Policy Enforcement Point,
+   Policy Administrator
+7. Supporting components: Continuous Diagnostics & Mitigation (CDM),
+   Industry Compliance modules, Threat Intelligence feeds, Activity Logs,
+   PKI infrastructure, Identity Management, SIEM systems
+
+===================================================================
+7. RESULTS
+===================================================================
+The paper is a survey (no experimental results/numeric performance data),
+but its key findings/conclusions include:
+- ZT reduces attack footprint by enforcing least-privilege access and
+  continuous verification, aligning with most MITRE ATT&CK tactic
+  categories (Initial Access, Persistence, Privilege Escalation,
+  Credential Access, Command & Control, Defense Evasion, Impact, Lateral
+  Movement) — micro-segmentation and continuous monitoring specifically
+  limit initial access impact and lateral movement.
+- The majority of surveyed ZT systems are cloud-based, split between
+  centralized cloud (simple, stable, but higher latency/resource needs)
+  and edge-based decentralized (lower latency, more complex management,
+  but more secure via smaller segments).
+- Distributed and blockchain-based systems show promise for
+  resource-constrained/decentralized networks but require further work on
+  deployment overhead, communication cost, and consensus mechanisms.
+- RBAC works well for static networks; PBAC/ABAC perform better in dynamic,
+  heterogeneous environments but are more complex to manage.
+- Table 2 comparison shows most existing works implement only a subset of
+  desirable properties (authorization, authentication, access control,
+  cryptography, MFA, network segmentation) — very few papers achieve all
+  six simultaneously.
+
+===================================================================
+8. FUTURE DIRECTIONS
+===================================================================
+The paper identifies several open research challenges (Section 8):
+1. Segmentation: difficulty integrating micro-segmentation with legacy
+   systems, heterogeneous vendor protocols, and resource-constrained
+   devices; need lightweight segmentation protocols.
+2. Scalability: ZTA must scale with growing users/devices/data in a
+   plug-and-play manner; needs research into ML/AI-driven automated
+   policy management and SDN/NFV/cloud-based scalability solutions.
+3. Decentralized Implementation: managing complexity, data privacy, and
+   consensus algorithm overhead (especially for blockchain-based ZT) in
+   decentralized/distributed setups.
+4. Interoperability: lack of standard protocols across ZT vendors and
+   networks; need agreed standards for heterogeneous device communication.
+5. Machine Learning and AI: need lightweight, explainable, and
+   privacy-preserving ML/AI (e.g., federated learning) for anomaly
+   detection without exposing private micro-segment data.
+6. Incident Response: micro-segmentation can reduce visibility into
+   network-wide attacks; high volume of ZT control traffic complicates
+   event correlation across heterogeneous devices.
+7. End-to-end encryption/key management across multiple segments and
+   diverse devices; Attribute-Based Encryption (ABE) is promising but
+   complex to scale.
+
+===================================================================
+9. CONCLUSION
+===================================================================
+Zero Trust assumes no inherent trust for any user, device, process, or
+application; all traffic must be authenticated, authorized, and verified
+before resource access is granted. The authors systematically reviewed
+ZTA across three dimensions — architectural setup, authorization/
+authentication mechanisms, and MITRE ATT&CK alignment — and examined
+cloud-based, IoT-based, and blockchain-based implementations along with
+their security/privacy properties. They conclude that implementing ZT in
+continuously changing, resource-intensive environments is challenging
+(resources, training, implementation scenarios), but that ZT is likely to
+reduce zero-day attacks and minimize attacker footprint through
+micro-segmentation. Organizations should carefully evaluate network needs,
+budget, and human resource constraints before adopting Zero Trust.
+
+===================================================================
+RELEVANCE TO "ZTA FOR WSN" TOPIC
+===================================================================
+This survey provides the foundational vocabulary and framework (PDP/PEP/PA,
+authentication/authorization models, micro-segmentation, MITRE ATT&CK
+mapping) needed to frame Zero Trust for Wireless Sensor Networks. Its
+discussion of IoT-based ZT implementations, lightweight cryptography
+requirements for resource-constrained devices, and network segmentation
+strategies for the "device, fog, or edge level" are directly applicable
+to WSN nodes, which are similarly resource-constrained, distributed, and
+prone to insider/physical-layer threats.
