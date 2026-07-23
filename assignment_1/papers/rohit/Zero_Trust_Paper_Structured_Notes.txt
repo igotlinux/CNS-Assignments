@@ -1,0 +1,111 @@
+Abstract
+
+The paper reviews Zero Trust Architecture (ZTA) as a modern
+cybersecurity model that replaces perimeter-based security with
+continuous verification. It surveys authentication, access control,
+encryption, micro-segmentation, security automation, Zero Trust
+taxonomy, implementation approaches, challenges, and future research
+directions. The review compares multiple Zero Trust approaches across
+cloud computing, blockchain, IoT, edge computing, Web3, machine
+learning, and wireless networks.
+
+Intro
+
+Information security has become increasingly challenging due to digital
+transformation, cloud computing, remote work, and sophisticated
+cyberattacks. Traditional perimeter-based security is no longer
+sufficient. Zero Trust shifts security from trusting network location to
+continuously verifying every access request. The paper aims to review
+current Zero Trust research, compare existing approaches, identify
+challenges, and suggest future research.
+
+Background
+
+The Zero Trust concept evolved from earlier ideas such as
+de-perimeterization and the U.S. Department of Defense’s “black core”
+initiative. John Kindervag later coined the term “Zero Trust.” The paper
+explains major Zero Trust elements including: - Implicit distrust -
+Bring Your Own Device (BYOD) - Security policies - Untrusted local
+networks - Multi-factor authentication - Context-aware access control -
+Continuous monitoring - Data protection - User and Entity Behavior
+Analytics (UEBA) - Zero Trust Architecture components including Policy
+Engine, Policy Administrator, Policy Enforcement Point, SIEM, PKI,
+Identity Management, and Threat Intelligence.
+
+Objectives
+
+-   Review the current state of Zero Trust research.
+-   Compare existing Zero Trust Architecture approaches.
+-   Analyze authentication, trust evaluation, and access control
+    mechanisms.
+-   Identify strengths and weaknesses of existing methods.
+-   Highlight open challenges.
+-   Recommend future research directions.
+
+Literature review
+
+The review discusses numerous Zero Trust implementations including: -
+Blockchain-based Zero Trust - BLP/BIBA-based trust models - Cloud
+data-center Zero Trust - Context-aware access control - IoT security -
+Edge computing - Healthcare applications - Machine learning-assisted
+Zero Trust - Web3 - Wireless networks The paper also presents
+comparative tables showing advantages and disadvantages of different
+techniques and platforms.
+
+Methodology
+
+This is a survey/review paper. The authors collected and analyzed
+existing Zero Trust literature, categorized research according to
+architecture, authentication, access control, trust evaluation, and
+application domains, then compared the approaches using qualitative
+analysis.
+
+Methods
+
+The paper performs: - Comparative analysis of Zero Trust frameworks -
+Taxonomy construction - Comparison of traditional security vs Zero
+Trust - Platform-wise comparison (Cloud, IoT, Blockchain, Edge
+Computing, Mobile Networks, Wireless Networks, Web3, Machine Learning) -
+Technique comparison based on benefits and limitations - Analysis of
+usability versus security
+
+System requirement
+
+The paper does not define implementation hardware or software
+requirements because it is a review article. Instead, it identifies
+common Zero Trust requirements: - Continuous authentication - Identity
+management - Multi-factor authentication - Policy Engine and Policy
+Administrator - Policy Enforcement Point - SIEM - PKI - Threat
+intelligence - Continuous monitoring - Fine-grained access control -
+Encryption - Micro-segmentation - Trust evaluation mechanisms
+
+Results
+
+The review concludes that: - Zero Trust significantly improves security
+over traditional perimeter-based approaches. - Authentication,
+continuous verification, and access control are the most critical
+components. - AI, blockchain, cloud computing, and machine learning can
+strengthen Zero Trust. - No single architecture completely satisfies all
+Zero Trust requirements. - Different application domains require
+different Zero Trust implementations. - Security must be balanced with
+usability.
+
+Future directions
+
+Future work identified by the authors includes: - Better integration of
+IoT, blockchain, 5G/6G, edge and fog computing. - Stronger trust
+evaluation methods. - Wider adoption of continuous and multi-factor
+authentication. - Risk-based adaptive access control. - AI-assisted Zero
+Trust automation. - Improved scalability and reduced computational
+overhead. - Real-world enterprise deployments. - Better balance between
+usability and security.
+
+Conclusion
+
+The paper concludes that Zero Trust is a promising cybersecurity
+paradigm that continuously validates users, devices, and applications
+rather than relying on network boundaries. Authentication, access
+control, encryption, micro-segmentation, and continuous monitoring are
+essential components. The review summarizes current research, compares
+major approaches, identifies challenges, and provides future research
+directions to support secure Zero Trust deployment.

@@ -1,0 +1,384 @@
+PAPER: 5G Defense Network Using Commercial gNodeB with Zero Trust Architecture
+Authors: Woocheol Kim, Sunji Oh, Chang-Gyu Lim, Kiwon Kim, Jongkuk Lee, Hea-Sook Park
+Source: ETRI Journal, 2025;47(3):445-458, DOI 10.4218/etrij.2024-0476
+
+================================================================
+* ABSTRACT
+================================================================
+The paper addresses the growing need for secure, reliable military 5G
+communication as commercial 5G adoption expands. It proposes a defense
+network architecture that uses a commercial next-generation Node B (gNB)
+configured with a military-specific Public Land Mobile Network (PLMN) ID,
+aiming to balance broad coverage, cost efficiency, and strong security.
+A Zero Trust (ZT) architecture built on a Software-Defined Perimeter (SDP)
+is layered on top to control access. The authors detail the UE connection
+flow through standard 5G authentication plus SDP-based access management,
+then validate the design through Open5GS/UERANSIM simulations under
+denial-of-service (DoS) and IP-scanning attacks, and further confirm
+feasibility on a real 5G testbed.
+
+================================================================
+* INTRODUCTION
+================================================================
+- 5G adoption is expanding globally, including in military, IoT,
+  autonomous vehicle, and telemedicine contexts, driving demand for
+  private-network access with strong security guarantees.
+- The US DoD has pushed strategic plans for 5G adoption and has separately
+  mandated Zero Trust as a paradigm shift away from perimeter-based
+  security.
+- Military 5G has stricter security/reliability needs than commercial 5G.
+  A fully private, defense-only 5G network is the "gold standard" for
+  security but is costly, slow to deploy, coverage-limited, and tied to
+  dedicated frequencies.
+- Leveraging commercial 5G infrastructure lowers cost and improves
+  coverage, but introduces security concerns when defense traffic rides
+  on commercial components.
+- Existing approaches (VPNs) don't fit well because they authenticate only
+  after network access is granted — contradicting ZT's "never trust,
+  always verify" principle, and they don't exploit 5G's native
+  architecture.
+- The paper's core proposal: commercial gNB + military PLMN ID + SDP-based
+  ZT architecture, validated via simulation (Open5GS + UERANSIM) and a
+  real-world SDR-based testbed (OAI).
+- Stated contributions:
+  1. Description of a 5G defense architecture using commercial gNB,
+     compared against other private 5G scenarios on security/cost/coverage.
+  2. A ZT-based 5G defense architecture using SDP, proposed and implemented.
+  3. Simulation-based performance evaluation showing resilience to DoS and
+     IP-scanning attacks.
+  4. Real-world deployment/testing to confirm feasibility.
+
+================================================================
+* BACKGROUND
+================================================================
+5G Network Architecture Basics:
+- UE (user equipment): phones, tablets, laptops, IoT devices.
+- gNB: 5G base station connecting UEs to the core network.
+- CN (core network): handles data traffic, connections, network functions;
+  supports network slicing and edge computing.
+- Control Plane (CP): signaling — authentication, session/mobility
+  management, policy enforcement.
+- User Plane (UP): handles actual user data transmission and QoS.
+- NSA vs SA modes: Non-Standalone reuses 4G LTE core; Standalone is fully
+  independent 5G with lower latency and higher speed.
+- PLMN ID: identifies a mobile operator (country + network code); routes
+  UEs to the correct core network.
+- Standard 5G connection flow: UE scans for gNBs, selects PLMN ID, connects;
+  CN authenticates UE via IMSI/USIM credentials (protected in transit via
+  SUCI); security-key exchange follows; UPF then assigns IP and manages
+  data transmission.
+
+Zero Trust / SDP Concepts:
+- ZT model: no implicit trust between internal/external networks; every
+  access request is authenticated and continuously verified;
+  least-privilege enforced.
+- SDP: a practical ZT implementation that creates authenticated,
+  access-controlled virtual networks. Unlike VPNs (authenticate after
+  connecting), SDP authenticates and authorizes before granting access,
+  and separates the control channel (authentication/access control) from
+  the data channel (actual traffic), each protected via IPSec/TLS,
+  often reinforced with MFA (OTP, PKI).
+- SDP roles: Controller (central authority for authentication/access
+  decisions), Initiating Host (IH — the endpoint requesting access),
+  Accepting Host (AH — the endpoint receiving connections).
+- SDP connection flow (per Fig. 1 in paper): controller comes online →
+  authenticates IH and AH identities → determines authorized AH list →
+  gives IH the accepted AH list → IH receives AH IPs → secure encrypted
+  data channel established between IH and AH.
+
+================================================================
+* OBJECTIVES
+================================================================
+1. Design a 5G military network architecture that uses commercial gNB
+   infrastructure (for cost/coverage benefits) while preserving
+   defense-grade security via a dedicated PLMN ID and core network.
+2. Integrate a Zero Trust architecture (via SDP) into this commercial-gNB
+   based defense network, addressing a gap the authors identify: existing
+   ZT-for-5G research tends to overlook comprehensive ZT integration for
+   scenarios where 5G devices access private/closed networks.
+3. Quantitatively evaluate the proposed architecture's resilience against
+   DoS and IP-scanning attacks, and its performance overhead versus a
+   non-SDP baseline.
+4. Validate feasibility on a real-world hardware testbed (not just
+   simulation).
+
+================================================================
+* LITERATURE REVIEW
+================================================================
+- [1] Sufyan et al. — survey of 5G-to-beyond-5G evolution, challenges,
+  technologies.
+- [2]-[5] — surveys/papers on 5G for military communications: trends,
+  requirements, potential, and the case for militarizing 5G.
+- [6],[7] — DoD 5G strategy and US congressional research on national
+  security implications of 5G.
+- [8],[9] — private 5G network surveys covering enabling tech, deployment
+  models, spectrum allocation readiness.
+- [10] — survey on 5G security advances and future challenges.
+- [11] — the corresponding author's own prior work on SDP-based direct
+  trust access to private networks (precursor to this paper).
+- [12] — implementation issues of 5G-based government network services.
+- [13],[14] — foundational ZT references: NIST SP 800-207 Zero Trust
+  Architecture, and the DoD ZT Reference Architecture v2.0.
+- [15] — a sustainable ZT security framework for 5G mobile core networks
+  combining virtualized EPC with virtualized SDP.
+- [16] — ZT applied to network slicing in 5G open architecture, using a
+  "VEAbility" trust metric (vulnerability, exploitability, attackability)
+  plus user-experience indicators.
+- [17],[18] — the open-source tools used for simulation: Open5GS (core
+  network) and UERANSIM (UE/RAN simulator).
+- [19],[20] — OpenAirInterface (OAI) and USRP B210 SDR, used for the
+  real-world testbed's gNB implementation.
+- [21]-[23] — general 5G architecture and security/standards references.
+- [24],[25] — SDP specification documents (Cloud Security Alliance SDP
+  architecture guide, SDP spec v2.0).
+- [26]-[30] — private 5G / network slicing / military 5G service papers
+  informing the four architecture scenarios compared in Section 3.
+- [31] — 3GPP policy and charging control framework (TS 23.503).
+- [32] — Moubayed et al., "SDP: state of the art secure solution for
+  modern networks" — used as the key performance-comparison baseline
+  (their DDoS test with a virtual wired network vs. this paper's wireless,
+  single-attacker DoS test).
+- [33] — nmap, the tool used to simulate IP scanning attacks.
+- [34] — agile management/interoperability testing of SDN/NFV-enriched
+  5G cores, cited as a direction for future real-environment testing.
+- [35],[36] — machine-learning-based IoT/5G security detection approaches,
+  cited as future work directions for anomaly detection and threat
+  prediction.
+
+Gap identified: prior ZT-for-5G work (e.g., [15],[16]) focuses on securing
+the mobile core itself, but doesn't fully address the specific case of a
+5G device using a commercial gNB to reach a private/closed (e.g., military)
+network — which is what this paper targets.
+
+================================================================
+* METHODOLOGY
+================================================================
+Comparative architecture analysis + simulation + real-world testbed,
+in three stages:
+
+1. Architecture scenario comparison (Section 3):
+   Four 5G defense network scenarios were compared along a spectrum of
+   commercial-vs-defense component sharing:
+   - 2.A: Fully isolated defense network — dedicated gNB, CP, UP.
+     Max security, high cost, limited coverage.
+   - 2.B: Shared commercial gNB + CN CP, with a defense-owned UP.
+     Lower cost, but subscriber privacy/location data is exposed to the
+     commercial CP.
+   - 2.C: Network-slicing approach — commercial and defense traffic
+     coexist on shared infrastructure, logically separated by slice.
+     Low cost/flexible, but slicing standardization is immature and risk
+     of unauthorized cross-slice access exists without strong encryption.
+   - 2.D (chosen approach): Commercial gNB + military-owned CN (CP+UP),
+     distinguished via a dedicated military PLMN ID. Broad coverage and
+     cost efficiency from reusing commercial gNB/frequency bands, while
+     keeping core network control (and thus security) in military hands.
+     Requires commercial gNB/operator support for routing the military
+     PLMN ID.
+
+2. Proposed ZT architecture design (Section 4):
+   - Layer 2.D with an SDP-based ZT layer.
+   - The "5G Military ZT Manager" plays the SDP Controller role.
+   - The military CN plays the SDP Accepting Host (AH).
+   - The UE and the private-network application server both act as SDP
+     Initiating Hosts (IH).
+   - Defined a full communication flow (Fig. 4): ZT-network preparation →
+     standard 5G-based session establishment (PLMN selection, 5G auth,
+     5G data channel) → SDP authentication/authorization exchange between
+     UE, CN, and ZT manager → establishment of the SDP data channel
+     between UE and the private-network server.
+
+3. Empirical validation:
+   a. Simulation (Section 5): built a virtual 5G environment using
+      Open5GS (core network) and UERANSIM (UE/RAN), across 6 Ubuntu 22.04
+      VMs. SDP components implemented in C++ (IH), Python (AH), and C++
+      with a Spring/Java web GUI (ZT manager/controller). Two UEs were
+      simulated: one as a legitimate client, one as an attacker performing
+      DoS (high-volume TCP flooding) and IP-scanning (nmap) attacks.
+      Metrics: connection setup time, average throughput, with/without SDP,
+      with/without attack — benchmarked against a prior study [32].
+   b. Real-world testbed (Section 6): a physical rig — mini-PC + Quectel
+      RM500Q-GL 5G modem as UE, a USRP B210 SDR running OpenAirInterface
+      as the gNB, and separate mini-PCs for the CN (OAI), the 5G Military
+      ZT manager, and a web server. Verified end-to-end SDP authentication
+      behavior (UE blocked from the server pre-authentication; UPF
+      iptables updated post-authentication to allow access) and captured
+      screenshots/logs of the SDP IH/AH/controller in action.
+
+================================================================
+* DIAGRAM (ER DIAGRAM / DFD EQUIVALENT)
+================================================================
+Note: this is a network-architecture paper, not a database-design paper,
+so it does not contain a classic ER diagram. The closest structural
+equivalents are its network/data-flow diagrams, summarized as
+text-based data-flow descriptions below.
+
+Figure 1 — SDP connection process (control/data flow):
+  SDP Controller --(auth)--> SDP Initiating Host (IH)
+  SDP Controller --(auth)--> SDP Accepting Host (AH)
+  Controller --(authorized AH list)--> AH
+  Controller --(accepted IH list)--> IH
+  IH --(receives AH IPs)--> Controller
+  IH <==(secure encrypted data channel)==> AH
+  (dashed lines = SDP control channel; solid lines = SDP data channel)
+
+Figure 2 — Four architecture scenarios (component-sharing matrix):
+  Rows: Defense network / CN-CP / CN-UP / gNB / UE
+  Columns: Scenario A (fully isolated) / B (shared gNB+CP) /
+  C (network slicing) / D (commercial gNB + military CN, chosen design)
+  Color-coded: blue = commercial elements, green = defense elements.
+
+Figure 3 — Conceptual ZT 5G defense architecture:
+  UE (SDP IH) --5G/PLMN--> gNB (commercial) --> CN (SDP AH, military CP+UP)
+  CN <==SDP control channel==> 5G Military ZT Manager (SDP controller)
+  CN <==SDP data channel==> ZT Manager
+
+Figure 4 — End-to-end communication/data flow (the paper's main
+process/sequence diagram, functionally a DFD):
+  Actors: UE (SDP IH) | Commercial gNB | CN (SDP AH) | 5G Military ZT
+  Manager (SDP controller) | Server (SDP IH)
+  Flow:
+  1. Preparation: ZT manager pre-registers/provisions subscribers+devices;
+     sets up secure control channels with CN and server.
+  2. CN <--auth--> ZT manager: authorized & secure SDP control channel.
+  3. Server <--auth--> ZT manager: authorized & secure SDP control channel.
+  4. ZT manager --(UE info for 5G comms)--> CN.
+  5. Standard 5G session: UE selects military PLMN ID via gNB → 5G
+     authentication with CN → 5G data channel established.
+  6. CN --(ready-UE info)--> ZT manager.
+  7. Data-channel-to-private-network phase: UE <--auth--> ZT manager over
+     SDP control channel → ZT manager --(accepted IH info)--> CN →
+     SDP data channel opened between UE and private network resources.
+
+Figure 5 — Simulation testbed data flow (Open5GS/UERANSIM, 6 VMs):
+  VM1 (UE0=attacker, UE1=client, SDP IH) -> VM2 (gNB) -> VM3 (CN-CP:
+  AMF/SMF) <==SDP control (green)==> VM5 (ZT manager/SDP controller)
+  VM4 (CN-UP/UPF, SDP AH) <==SDP data (yellow)==> VM6 (iPerf server, SDP IH)
+  IPs: VM1=192.168.56.105, VM2=.104, VM3=.110, VM4=.112, VM5=.22, VM6=.111
+  UE subnet: UE0=10.45.0.2 (attacker), UE1=10.45.0.3 (client)
+
+Figure 10 — Real testbed validation flow (state diagram of access):
+  Step 1: UE to Server, 5G ON / SDP OFF -> access FAILS (site unreachable)
+  Step 2: UPF iptables (SDP OFF) -> only ZT manager IP (192.168.0.12)
+          reachable, all else DROP
+  Step 3: UE runs SDP IH client -> authenticates with ZT manager (SDP
+          controller) -> success logged
+  Step 4: UPF iptables (SDP ON) -> "anywhere" ACCEPT rule added for the
+          authenticated UE's IP (12.1.1.2)
+  Step 5: UE to web server, 5G ON / SDP ON -> access SUCCEEDS
+
+================================================================
+* METHODS (attack scenarios & measurement techniques)
+================================================================
+- DoS attack test: single attacker node (UE 0) floods the server with
+  high-volume TCP traffic; SDP data-channel sessions are torn down if an
+  authenticated IH fails to send a keep-alive within 3 seconds.
+  Measured: average network throughput over a 30-second window under
+  4 conditions (SDP on/off × attack on/off).
+- IP scanning test: attacker UE runs `nmap -e uesimtun0 -sn
+  192.168.56.0/24` to enumerate live hosts.
+  Measured: number of discoverable hosts/services with SDP off vs. on.
+- Connection-time measurement: time for a 5G terminal to establish a data
+  connection, with vs. without SDP, averaged over 10 iterations; compared
+  against reference values from [32].
+- Real-world verification: manual step-through of UE access attempts
+  before/after SDP authentication, inspecting UPF iptables rule changes
+  and SDP IH/AH/controller logs and GUI.
+
+================================================================
+* SYSTEM REQUIREMENTS
+================================================================
+Simulation environment (6 VMs, Ubuntu 22.04, subnet 192.168.56.x):
+  - VM1: UERANSIM UE (SDP IH) — simulates UE0 (attacker) and UE1 (client)
+  - VM2: UERANSIM RAN (gNB)
+  - VM3: Open5GS CN Control Plane — AMF, SMF (SDP AH)
+  - VM4: Open5GS CN User Plane — UPF (SDP AH)
+  - VM5: 5G Military ZT manager (SDP controller) — web GUI via Spring/Java
+  - VM6: Application/iPerf server (SDP IH)
+  Software: Open5GS (core network), UERANSIM (UE/RAN simulator), SDP IH in
+  C++, SDP AH in Python, ZT manager core in C++ with Java/Spring GUI,
+  nmap for scanning-attack simulation, iPerf for throughput testing.
+
+Real-world testbed:
+  - UE: mini-PC + Quectel RM500Q-GL 5G modem, Windows 10, IP 12.1.1.2
+    (SDP IH)
+  - gNB: USRP B210 SDR running OpenAirInterface (OAI) 5G NR SA
+  - CN: mini-PC running OpenAirInterface CN, Ubuntu 22.04, IP
+    192.168.0.10 (SDP AH)
+  - 5G Military ZT manager: separate host, IP 192.168.0.12 (SDP
+    controller)
+  - Web/application server: IP 192.168.0.14 (SDP IH)
+  - Physical setup housed in a shielded rack ("shield box") with SDR, ZT
+    manager, CN, web server, and 5G modem/UE modules.
+
+================================================================
+* RESULTS
+================================================================
+Connection time (avg. of 10 runs):
+  - Without SDP: 0.297 s (this study) vs. 0.09 s reported in [32]
+    (difference attributed to wireless vs. wired test environments).
+  - With SDP: 0.786 s (this study) vs. 1.02 s in [32].
+  - Conclusion: SDP adds modest connection-time overhead but remains
+    practical for a 5G wireless environment.
+
+Average throughput, no attack:
+  - Without SDP: 299.7 Mbit/s (baseline, ~300 Mbit/s stable).
+  - With SDP: 197.6 Mbit/s (reduction attributed to overhead of SDP
+    control/data channels and per-second keep-alive messages).
+
+Average throughput, under DoS attack (single attacker node):
+  - Without SDP: dropped to 145.9 Mbit/s (~50% of normal capacity, i.e.
+    roughly half the baseline throughput).
+  - With SDP: maintained 194.3 Mbit/s (above 65% of baseline), showing
+    SDP substantially mitigates the DoS impact.
+  - Comparison to [32]: their DDoS test (multiple attacker nodes) showed
+    a much larger drop (1.51 Gbit/s -> 6.86 Mbit/s), reflecting a more
+    extreme multi-attacker scenario versus this paper's single-attacker
+    DoS case.
+
+IP scanning attack (nmap) results:
+  - Without SDP: all 7 hosts on the subnet detected/enumerated (~66.66
+    seconds scan), exposing core components (ZT manager, CN CP, UPF, and
+    other devices) to the attacker.
+  - With SDP: only 2 hosts detected (ZT manager and UPF), in ~17.65
+    seconds — CN CP, application server, and other devices were hidden
+    from the scan, since the UPF (as SDP AH) blocks unauthenticated
+    devices from discovering/reaching them.
+
+Real-world testbed verification:
+  - Before SDP authentication: UE has an active 5G connection but cannot
+    reach the private web server (UPF iptables only permit traffic to the
+    ZT manager IP).
+  - After SDP authentication: UPF iptables update to add an "anywhere"
+    ACCEPT rule for the authenticated UE's IP, and the UE successfully
+    accesses the web server.
+  - Confirms that SDP-based ZT blocks unauthorized access even when a
+    valid 5G radio link already exists.
+
+================================================================
+* FUTURE DIRECTIONS
+================================================================
+- Test the architecture in a more complex, real operational environment
+  (beyond the current controlled testbed), referencing agile SDN/NFV core
+  management/interoperability approaches ([34]).
+- Study compatibility of ZT-based 5G networks with a wider range of
+  commercial gNB and other commercial 5G components, to improve
+  scalability.
+- Incorporate machine-learning-based security models (e.g., IoT attack
+  detection via adaptive learning / cellular learning automata [35]; AI
+  for 5G-and-beyond cybersecurity defense/offense [36]) to improve network
+  anomaly detection and threat prediction, increasing scalability and
+  security performance of the SDP-based architecture.
+
+================================================================
+* CONCLUSION
+================================================================
+The paper demonstrates a practical way to integrate 5G into a defense
+network using a mix of commercial and military-specific components under
+a Zero Trust architecture. Using a commercial gNB with a military PLMN ID,
+paired with an SDP-based ZT layer managed by a dedicated military ZT
+manager, the authors show — via simulation and a real-world testbed —
+that the design mitigates IP-scanning and DoS attacks while keeping
+authentication and access control strictly enforced, even over an active
+5G radio connection. The results support commercial-5G-based military
+networks as a viable, lower-cost, higher-coverage alternative to
+fully isolated private 5G networks, without giving up ZT-grade security.
